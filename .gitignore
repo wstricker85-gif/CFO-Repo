@@ -1,0 +1,15 @@
+# Dependencies
+dashboard/node_modules/
+dashboard/.next/
+
+# Environment variables (NEVER commit these)
+dashboard/.env.local
+.env.local
+.env
+
+# Data (may contain sensitive financial data)
+data/uploads/
+data/market-cache/
+
+# OS
+.DS_Store
