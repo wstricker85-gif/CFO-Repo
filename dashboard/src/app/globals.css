@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   LAYER 1: CSS Variables (theme-aware)
+   These change when data-theme="light" is set.
+   All Tailwind tokens below reference these.
+───────────────────────────────────────────── */
+
+:root {
+  /* Surfaces */
+  --bg:           #111113;
+  --panel:        #19191c;
+  --wash:         rgba(255, 255, 255, 0.025);
+
+  /* Text */
+  --ink:          #f1eee8;
+  --muted:        #aaa7a2;
+
+  /* Borders */
+  --line:         #343438;
+
+  /* Brand accent (red-orange) */
+  --accent:       #d74731;
+  --accent-soft:  #e4836f;
+
+  /* Header */
+  --mast:         rgba(17, 17, 19, 0.94);
+
+  /* Status colors (same in both themes — semantic meaning must not shift) */
+  --status-good:    #22c55e;
+  --status-watch:   #f59e0b;
+  --status-warning: #ef4444;
+
+  /* Chart series (categorical, never for status) */
+  --series-1: #60a5fa;   /* blue   */
+  --series-2: #a78bfa;   /* purple */
+  --series-3: #22d3ee;   /* cyan   */
+  --series-4: #fb923c;   /* orange */
+  --series-5: #f472b6;   /* pink   */
+
+  /* Flow colors (paired in/out — aliases of status) */
+  --flow-in:  var(--status-good);
+  --flow-out: var(--status-warning);
+}
+
+[data-theme="light"] {
+  --bg:           #f3f0e9;
+  --panel:        #ffffff;
+  --wash:         rgba(23, 23, 25, 0.035);
+
+  --ink:          #171719;
+  --muted:        #625f5a;
+
+  --line:         #d2cbc0;
+
+  --accent:       #c83f2d;
+  --accent-soft:  #a63728;
+
+  --mast:         rgba(243, 240, 233, 0.94);
+}
+
+/* ─────────────────────────────────────────────
+   LAYER 2: Tailwind Theme Registration
+   @theme tells Tailwind to generate utility
+   classes from these values.
+
+   --color-X   → bg-X, text-X, border-X, ring-X
+   --spacing-X → p-X, m-X, gap-X, w-X, h-X
+   --font-X    → font-X
+───────────────────────────────────────────── */
+
+@theme inline {
+  /* Surfaces */
+  --color-bg:           var(--bg);
+  --color-panel:        var(--panel);
+  --color-wash:         var(--wash);
+
+  /* Text */
+  --color-ink:          var(--ink);
+  --color-muted:        var(--muted);
+
+  /* Borders */
+  --color-line:         var(--line);
+
+  /* Brand */
+  --color-accent:       var(--accent);
+  --color-accent-soft:  var(--accent-soft);
+
+  /* Status */
+  --color-good:         var(--status-good);
+  --color-watch:        var(--status-watch);
+  --color-warning:      var(--status-warning);
+
+  /* Chart series */
+  --color-series-1:     var(--series-1);
+  --color-series-2:     var(--series-2);
+  --color-series-3:     var(--series-3);
+  --color-series-4:     var(--series-4);
+  --color-series-5:     var(--series-5);
+
+  /* Flow */
+  --color-flow-in:      var(--flow-in);
+  --color-flow-out:     var(--flow-out);
+
+  /* Spacing tokens */
+  --spacing-card:   20px;   /* standard card padding  → p-card  */
+  --spacing-wrap:   1180px; /* max content width       → max-w-wrap */
+  --spacing-gap:    12px;   /* gap between cards       → gap-gap  */
+  --spacing-section: 92px;  /* vertical section rhythm → py-section */
+
+  /* Typography */
+  --font-sans:  Inter, Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono:  "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+/* ─────────────────────────────────────────────
+   LAYER 3: Base styles
+   Global defaults. No component logic here.
+───────────────────────────────────────────── */
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers in tables and KPI cards should always align */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Eyebrow labels — monospace, uppercase, tight tracking */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
