@@ -4,7 +4,6 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import "./globals.css";
 
-// "--font-inter" is injected by next/font. globals.css @theme maps it to --font-sans.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -16,17 +15,33 @@ export const metadata: Metadata = {
   description: "AI-powered financial analysis for CFOs",
 };
 
+// Runs before React hydrates — prevents white flash when user has saved a theme.
+// Reads localStorage, falls back to system preference, falls back to dark.
+const themeScript = `
+  (function() {
+    try {
+      var stored = localStorage.getItem('theme');
+      var preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', stored || preferred);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de" data-theme="dark" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        {/* dangerouslySetInnerHTML is safe here — no user input, static string */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full bg-bg text-ink flex flex-col">
 
         <Header />
 
         <div className="flex flex-1">
           <Sidebar />
-
-          {/* Main content — scrollable, takes remaining width */}
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>

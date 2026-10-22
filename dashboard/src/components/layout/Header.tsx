@@ -1,6 +1,4 @@
-// Header is a server component — no interactivity needed here.
-// Matches the "mast" pattern from stricker-capital.de:
-// sticky, backdrop-blur, brand mark (W circle), app title, right-side slot.
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   return (
@@ -18,13 +16,16 @@ export function Header() {
         <BrandMark />
         <div className="flex flex-col">
           <span className="font-serif text-ink text-base leading-tight">CFO Dashboard</span>
-          <span className="label" style={{ fontSize: "9px" }}>powered by AI</span>
+          <span className="flex items-center gap-1" style={{ fontSize: "9px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)" }}>
+            🇨🇭 Powered by Swissi AI
+          </span>
         </div>
       </div>
 
-      {/* Right: placeholder for user menu / theme toggle (added later) */}
+      {/* Right: theme toggle */}
       <div className="flex items-center gap-3">
         <span className="label">Beta</span>
+        <ThemeToggle />
       </div>
     </header>
   );
