@@ -1,5 +1,22 @@
 /** Fixed English presentation copy; no external translation service. */
 export const english: Record<string, string> = {
+  Abweichung: "Variance",
+  "Umsatz vs. Plan": "Revenue vs. plan",
+  "Grün: Plan erreicht · Rot: unter Plan · Gepunktet: Ziele":
+    "Green: at/above plan · Red: below plan · Dotted: targets",
+  Margenziel: "Margin target",
+  "Plan erreicht": "At/above plan",
+  "Unter Plan": "Below plan",
+  "Umsatz & Profitabilität": "Revenue & profitability",
+  Monatsdiagramm: "Monthly chart",
+  "Umsatz, Plan, EBITDA-Marge und liquide Mittel im Monatsverlauf":
+    "Monthly revenue, plan, EBITDA margin and cash",
+  "Umsatz links in Tsd. EUR, EBITDA-Marge rechts in Prozent. Liquide Mittel unten mit eigener Skala. Monat berühren oder per Tastatur auswählen; Details und Datentabelle darunter.":
+    "Revenue on the left in EUR thousands; EBITDA margin on the right in percent. Cash below uses its own scale. Touch a month or select it with the keyboard; details and data table below.",
+  "Umsatz · Tsd. €": "Revenue · EUR thousands",
+  "EBITDA-Marge · %": "EBITDA margin · %",
+  "Liquide Mittel · Tsd. € · Monatsende": "Cash · EUR thousands · month-end",
+  "Fiktive Monatswerte · 2026": "Fictional monthly figures · 2026",
   "In Kooperation mit Swissi AI": "In cooperation with Swissi AI",
   "Über die Navigation gelangst du zu den verfügbaren Dashboard-Modulen.":
     "Use the navigation to open the available dashboard modules.",

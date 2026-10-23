@@ -347,3 +347,46 @@ Formatting uses de-DE or en-GB with EUR unchanged. CSV templates use the parser'
 existing English column aliases, and CSV decimal output follows the active locale.
 User-written report notes remain verbatim. Internal financial IDs, source data and
 filter values remain language-independent. Add catalog entries when adding UI copy.
+## Overview timeline (23 October 2026)
+
+The overview begins with a compact heading and a full-width monthly combination chart:
+the revenue line with gradient fill and a dashed revenue-plan line use the left EUR-thousands axis; EBITDA
+margin uses the labelled right percentage axis. A smaller closing-cash line below
+shares the month positions and has a separate EUR-thousands scale. No forecast is
+implied. The existing 3M/6M/YTD controls determine the visible history, bounded by
+the selected reporting month. Hover/focus previews a month; click/tap or Enter/Space
+pins its details, and Escape clears the selection. Chart inspection does not change
+the shared reporting month. The expandable table retains all displayed chart values.
+
+`lib/overview-chart.ts` joins the existing 2026 revenue history to the closing ledger
+and uses the established financial helpers for margin and plan variance. Closing
+cash remains a stock, separate from monthly revenue and EBITDA flows. Ledger reference
+checks cover the combined series. Existing theme tokens, typography and layout styles
+are reused; no CSS or new chart dependency is introduced. All new copy is bilingual.
+
+The introductory slogan, usage block and initial tour banner are removed from the
+entry view. The header still starts/resumes the full tour; completion summaries remain.
+KPIs, management briefing, statement links, actions and the P&L comparison follow the
+chart. All company data remains fictional and the overview retains that disclosure.
+
+Revenue now uses the existing semantic status tokens: green when monthly revenue
+meets/exceeds plan, red when below plan, with a textual key and month-level assessment.
+This describes revenue plan attainment only, not overall company health. Solid ink
+lines show EBITDA margin and closing cash; dotted, directly labelled reference lines
+show the active margin target and minimum cash balance from shared KPI rules. Targets
+are reference levels, not historical measurements or forecast series.
+
+The overview and its chart, KPI cards, statement links and P&L table now pass their
+React language snapshot explicitly to formatting helpers. The helpers retain their
+previous default for other callers. This fixes a reproduced hydration mismatch where
+an already-active English preference formatted German server snapshot values as English
+before that subtree hydrated. Regression tests cover explicit German formatting with
+English active, and browser checks cover English navigation back to the overview.
+
+The revenue series is now a continuous line with a vertical gradient area fading
+toward its zero baseline, replacing the original bars. Monthly clip regions retain
+the green/red revenue-versus-plan assessment for both the line and its fill. Points
+stay at the actual monthly observations; straight connections do not add observations
+or imply a forecast. The dashed revenue plan, solid margin and cash series, target
+lines, month inspection, accessible values and data table remain available. SVG IDs
+are scoped with React `useId` so gradients and clips remain independent per chart.

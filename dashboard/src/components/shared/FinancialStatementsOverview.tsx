@@ -6,7 +6,7 @@ import { getIncomeStatement, getBalanceStatement, getCashflowStatement } from "@
 import { formatCompactCurrency, formatDelta } from "@/lib/format";
 
 export function FinancialStatementsOverview() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const { period } = useDemo();
   const income = getIncomeStatement(period),
@@ -17,21 +17,21 @@ export function FinancialStatementsOverview() {
       href: "/guv",
       label: "GuV",
       title: "Vom Umsatz zum Ergebnis",
-      value: formatCompactCurrency(income.netIncome),
+      value: formatCompactCurrency(income.netIncome, language),
       detail: "Ergebnis nach Steuern im Monat",
     },
     {
       href: "/bilanz",
       label: "Bilanz",
       title: "Vermögen und Finanzierung",
-      value: formatCompactCurrency(balance.totals.assets),
+      value: formatCompactCurrency(balance.totals.assets, language),
       detail: "Bilanzsumme zum gewählten Stichtag",
     },
     {
       href: "/cashflow",
       label: "Cashflow",
       title: "Vom Ergebnis zur Liquidität",
-      value: formatDelta(cash.cashChange, "currency"),
+      value: formatDelta(cash.cashChange, "currency", language),
       detail: "Veränderung der liquiden Mittel im Monat",
     },
   ];

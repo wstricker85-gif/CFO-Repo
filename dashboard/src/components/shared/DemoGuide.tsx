@@ -33,46 +33,34 @@ export function TourLauncher() {
 }
 function TourIntro() {
   const { t } = useTranslation();
-
   const path = normalizeTourPath(usePathname());
   const { tour, dispatchTour } = useDemo();
-  if (tour.active || (!tour.finished && path !== "/")) return null;
-  const progress = tourProgress(tour, path),
-    resume = tour.lastPath !== null && !tour.finished;
+  // The header remains the entry point; show a summary only after a completed tour.
+  if (tour.active || !tour.finished) return null;
+  const progress = tourProgress(tour, path);
   return (
-    <section
-      className="tour-intro"
-      aria-label={t(tour.finished ? "Rundgang beendet" : "Vollständiger Dashboard-Rundgang")}
-    >
+    <section className="tour-intro" aria-label={t("Rundgang beendet")}>
       <div>
         <span className="label">
-          {t(
-            tour.finished
-              ? `${progress.visited.size} von ${tourSteps.length} Stationen besucht`
-              : `${tourChapters.length} Kapitel · ${tourSteps.length} Stationen · In deinem Tempo`,
-          )}
+          {t(`${progress.visited.size} von ${tourSteps.length} Stationen besucht`)}
         </span>
         <h2>
           {t(
-            tour.finished
-              ? progress.remaining.length
-                ? "Rundgang beendet. Weiter frei entdecken."
-                : "Das gesamte CFO-Dashboard entdeckt."
-              : "Das ganze CFO-Dashboard kennenlernen.",
+            progress.remaining.length
+              ? "Rundgang beendet. Weiter frei entdecken."
+              : "Das gesamte CFO-Dashboard entdeckt.",
           )}
         </h2>
         <p>
           {t(
-            tour.finished
-              ? progress.remaining.length
-                ? `${progress.remaining.length} Stationen sind noch offen. Du kannst sie gezielt nachholen.`
-                : "Alle Bereiche besucht. Die Funktionen stehen dir weiterhin zum Ausprobieren zur Verfügung."
-              : "Kurze Erklärungen und freiwillige Aktionen führen durch alle Bereiche. Du entscheidest, wann es weitergeht.",
+            progress.remaining.length
+              ? `${progress.remaining.length} Stationen sind noch offen. Du kannst sie gezielt nachholen.`
+              : "Alle Bereiche besucht. Die Funktionen stehen dir weiterhin zum Ausprobieren zur Verfügung.",
           )}
         </p>
       </div>
       <div className="tour-intro-actions">
-        {tour.finished && progress.remaining.length > 0 && (
+        {progress.remaining.length > 0 && (
           <Link
             className="button"
             href={progress.remaining[0].path}
@@ -83,21 +71,16 @@ function TourIntro() {
         )}
         <Link
           className="button primary-button"
-          href={resume ? tour.lastPath! : "/"}
-          onClick={() => dispatchTour(resume ? { type: "resume" } : { type: "start", path: "/" })}
+          href="/"
+          onClick={() => dispatchTour({ type: "start", path: "/" })}
         >
-          {t(
-            resume
-              ? "Rundgang fortsetzen ↗"
-              : tour.finished
-                ? "Neu starten ↗"
-                : "Rundgang starten ↗",
-          )}
+          {t("Neu starten ↗")}
         </Link>
       </div>
     </section>
   );
 }
+
 export function TourLayout({ children }: { children: React.ReactNode }) {
   const path = normalizeTourPath(usePathname());
   const { tour, dispatchTour } = useDemo();

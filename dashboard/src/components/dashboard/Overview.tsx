@@ -1,9 +1,9 @@
 "use client";
-import { getLocale } from "@/lib/i18n";
 import { useTranslation } from "@/components/i18n/Language";
 import Link from "next/link";
 import { useState } from "react";
 import { FinancialStatementsOverview } from "@/components/shared/FinancialStatementsOverview";
+import { getOverviewChartPoints } from "@/lib/overview-chart";
 import { getKpis } from "@/lib/demo-company";
 import { metricInsight } from "@/lib/insights";
 import { useDemo } from "@/components/shared/DemoProvider";
@@ -13,14 +13,13 @@ import { RevenueChart } from "./RevenueChart";
 import { PerformanceTable } from "./PerformanceTable";
 
 export function Overview() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
-  const { snapshots, history, period, setPeriod, snapshot, rules } = useDemo();
+  const { snapshots, period, setPeriod, snapshot, rules } = useDemo();
   const [range, setRange] = useState(6);
-  const [series, setSeries] = useState<"revenue" | "ebitda">("revenue");
   const definitions = getKpis(period, rules);
-  const points = history.slice(0, snapshot.count).slice(-range);
-  const endDate = new Intl.DateTimeFormat(getLocale(), { timeZone: "UTC" }).format(
+  const points = getOverviewChartPoints().slice(0, snapshot.count).slice(-range);
+  const endDate = new Intl.DateTimeFormat(locale, { timeZone: "UTC" }).format(
     new Date(snapshot.result.period.end),
   );
 
@@ -43,17 +42,7 @@ export function Overview() {
     <div className="overview">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">
-            {t(" Finance Cockpit ")}
-            <span>/</span> {t(" Übersicht ")}
-          </p>
-          <h1>
-            {t(" Das Wesentliche. ")}
-            <em>{t("Im Blick.")}</em>
-          </h1>
-          <p className="page-intro">
-            {t("Performance, Liquidität und die nächsten Entscheidungen.")}
-          </p>
+          <h1>{t("Übersicht")}</h1>
         </div>
         <div className="page-controls">
           <label className="period-control">
@@ -96,27 +85,59 @@ export function Overview() {
         <span className="context-currency">{t("EUR · Monatswerte")}</span>
       </div>
 
-      <div className="demo-explainer">
-        <span className="demo-explainer-icon" aria-hidden="true">
-          {t(" i ")}
-        </span>
-        <div>
-          <strong>{t("Ein CFO-Cockpit zum Ausprobieren.")}</strong>
-          <p>
-            {t(
-              " Monate wechseln, Szenarien testen und Kennzahlen verstehen: Beim Darüberfahren über eine Kennzahlenkarte öffnet sich eine kurze Einordnung. Über das Info-Symbol geht es auch per Tastatur oder Antippen. ",
-            )}
-          </p>
+      <section className="panel chart-panel" aria-labelledby="chart-title">
+        <div className="panel-heading">
+          <div>
+            <p className="label">{t("01 / Geschäftsentwicklung")}</p>
+            <h2 id="chart-title">{t("Umsatz & Profitabilität")}</h2>
+          </div>
+          <div className="segmented" role="group" aria-label={t("Diagrammzeitraum")}>
+            {[3, 6, 9].map((months) => (
+              <button key={months} aria-pressed={range === months} onClick={() => setRange(months)}>
+                {t(months === 9 ? "YTD" : `${months} M`)}
+              </button>
+            ))}
+          </div>
         </div>
-        <span className="demo-explainer-meta">
-          {t(" Beispieldaten ")}
-          <br />
-          {t(" Ohne Anmeldung ")}
-        </span>
-      </div>
+        <RevenueChart
+          points={points}
+          marginTarget={definitions.find((d) => d.metric.id === "ebitda-margin")!.rule!.good}
+          cashTarget={definitions.find((d) => d.metric.id === "cash")!.rule!.good}
+        />
+        <div className="chart-footer">
+          <span>
+            <svg width="16" height="8" aria-hidden="true">
+              <line x1="0" x2="7" y1="5" y2="3" stroke="var(--status-good)" strokeWidth="2.5" />
+              <line x1="9" x2="16" y1="3" y2="5" stroke="var(--status-warning)" strokeWidth="2.5" />
+            </svg>
+            {t("Umsatz vs. Plan")}
+          </span>
+          <span>
+            <svg width="16" height="8" aria-hidden="true">
+              <line
+                x1="0"
+                x2="16"
+                y1="4"
+                y2="4"
+                stroke="var(--ink)"
+                strokeWidth="2"
+                strokeDasharray="4 3"
+              />
+            </svg>
+            {t("Plan")}
+          </span>
+          <span>
+            <svg width="16" height="8" aria-hidden="true">
+              <line x1="0" x2="16" y1="4" y2="4" stroke="var(--ink)" strokeWidth="2.5" />
+            </svg>
+            {t("EBITDA-Marge")}
+          </span>
+          <span className="chart-footnote">{t("Fiktive Monatswerte · 2026")}</span>
+        </div>
+      </section>
 
       <section
-        className="kpi-grid"
+        className="kpi-grid performance-panel"
         aria-label={t("Finanzielle Kernkennzahlen")}
         aria-live="polite"
         aria-atomic="true"
@@ -157,102 +178,54 @@ export function Overview() {
 
       <FinancialStatementsOverview />
 
-      <div className="analysis-grid">
-        <section className="panel chart-panel" aria-labelledby="chart-title">
-          <div className="panel-heading">
-            <div>
-              <p className="label">{t("01 / Geschäftsentwicklung")}</p>
-              <h2 id="chart-title">{t("Leistung im Zeitverlauf")}</h2>
-            </div>
-            <div className="segmented" role="group" aria-label={t("Diagrammzeitraum")}>
-              {[3, 6, 9].map((months) => (
-                <button
-                  key={months}
-                  aria-pressed={range === months}
-                  onClick={() => setRange(months)}
+      <section
+        className="panel action-panel"
+        id="management-actions"
+        aria-labelledby="actions-title"
+      >
+        <div className="panel-heading">
+          <div>
+            <p className="label">{t("02 / Handlungsfelder")}</p>
+            <h2 id="actions-title">{t("Nächste Schritte")}</h2>
+          </div>
+          <span className="count-badge">03</span>
+        </div>
+        <p className="action-intro">{t("Vorgeschlagene Maßnahmen aus dem Demoabschluss.")}</p>
+        <ol className="action-list">
+          {snapshot.actions.map((action, index) => (
+            <li key={action.id}>
+              <div className="action-top">
+                <span className="action-number">0{index + 1}</span>
+                <span
+                  className="status"
+                  data-status={action.priority === "watch" ? "watch" : "neutral"}
                 >
-                  {t(months === 9 ? "YTD" : `${months} M`)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="chart-toolbar">
-            <div className="chart-tabs" role="group" aria-label={t("Kennzahl im Diagramm")}>
-              <button aria-pressed={series === "revenue"} onClick={() => setSeries("revenue")}>
-                {t(" Umsatz ")}
-              </button>
-              <button aria-pressed={series === "ebitda"} onClick={() => setSeries("ebitda")}>
-                {t(" EBITDA ")}
-              </button>
-            </div>
-            <span className="chart-unit">{t("in Tsd. € · 2026")}</span>
-          </div>
-          <RevenueChart points={points} series={series} />
-          <div className="chart-footer">
-            <span>
-              <i className={series === "revenue" ? "legend-actual" : "legend-ebitda"} />
-              {t(" Ist ")}
-              {t(series === "revenue" ? "Umsatz" : "EBITDA")}
-            </span>
-            {series === "revenue" && (
-              <span>
-                <i className="legend-plan" />
-                {t(" Plan Umsatz ")}
-              </span>
-            )}
-            <span className="chart-footnote">{t("Fiktive Monatswerte")}</span>
-          </div>
-        </section>
-
-        <section
-          className="panel action-panel"
-          id="management-actions"
-          aria-labelledby="actions-title"
-        >
-          <div className="panel-heading">
-            <div>
-              <p className="label">{t("02 / Handlungsfelder")}</p>
-              <h2 id="actions-title">{t("Nächste Schritte")}</h2>
-            </div>
-            <span className="count-badge">03</span>
-          </div>
-          <p className="action-intro">{t("Vorgeschlagene Maßnahmen aus dem Demoabschluss.")}</p>
-          <ol className="action-list">
-            {snapshot.actions.map((action, index) => (
-              <li key={action.id}>
-                <div className="action-top">
-                  <span className="action-number">0{index + 1}</span>
-                  <span
-                    className="status"
-                    data-status={action.priority === "watch" ? "watch" : "neutral"}
-                  >
-                    <span className="status-dot" />
-                    {t(action.priority === "watch" ? "Prüfen" : "Vorbereiten")}
-                  </span>
-                </div>
-                <h3>
-                  <Link
-                    href={
-                      action.id === "collections"
-                        ? "/working-capital#ueberfaellig"
-                        : action.id === "costs"
-                          ? "/guv"
-                          : "/analyse"
-                    }
-                  >
-                    {t(action.title)} ↗
-                  </Link>
-                </h3>
-                <p>{t(action.description)}</p>
-                <div className="action-meta">
-                  <span>{t(action.owner)}</span>
-                  <time dateTime={action.due.split(".").reverse().join("-")}>{t(action.due)}</time>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </div>
+                  <span className="status-dot" />
+                  {t(action.priority === "watch" ? "Prüfen" : "Vorbereiten")}
+                </span>
+              </div>
+              <h3>
+                <Link
+                  href={
+                    action.id === "collections"
+                      ? "/working-capital#ueberfaellig"
+                      : action.id === "costs"
+                        ? "/guv"
+                        : "/analyse"
+                  }
+                >
+                  {t(action.title)} ↗
+                </Link>
+              </h3>
+              <p>{t(action.description)}</p>
+              <div className="action-meta">
+                <span>{t(action.owner)}</span>
+                <time dateTime={action.due.split(".").reverse().join("-")}>{t(action.due)}</time>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <section
         className="panel performance-panel"

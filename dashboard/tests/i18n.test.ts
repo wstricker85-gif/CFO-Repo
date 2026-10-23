@@ -60,3 +60,19 @@ test("Language preference updates formatting and reports while preserving own no
     Reflect.deleteProperty(globalThis, "window");
   }
 });
+
+test("Explicit render language keeps German hydration values stable while English is active", () => {
+  Object.defineProperty(globalThis, "window", { value: {}, configurable: true });
+  try {
+    setLanguage("en");
+    assert.equal(formatCompactCurrency(1280000, "de"), "1,28 Mio. €");
+    assert.equal(formatValue(16.4, "percent", "de"), "16,4 %");
+    assert.equal(formatValue(46, "days", "de"), "46 Tage");
+    assert.equal(formatValue(null, "currency", "de"), "Nicht verfügbar");
+    assert.equal(formatDate("2026-09-30", "de"), "30.9.2026");
+    assert.equal(formatCompactCurrency(1280000), "€1.28m");
+  } finally {
+    setLanguage("de");
+    Reflect.deleteProperty(globalThis, "window");
+  }
+});

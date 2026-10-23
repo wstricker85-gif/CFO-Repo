@@ -4,7 +4,7 @@ import type { PerformanceRow } from "@/lib/demo-data";
 import { assessmentLabels, formatDelta, formatValue } from "@/lib/format";
 
 export function PerformanceTable({ rows, period }: { rows: PerformanceRow[]; period: string }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <div
@@ -32,15 +32,17 @@ export function PerformanceTable({ rows, period }: { rows: PerformanceRow[]; per
           {rows.map((row) => (
             <tr key={row.label} className={row.emphasis ? "emphasis-row" : ""}>
               <th scope="row">{t(row.label)}</th>
-              <td>{t(formatValue(row.actual, "currency"))}</td>
-              <td className="muted">{t(formatValue(row.budget, "currency"))}</td>
+              <td>{t(formatValue(row.actual, "currency", language))}</td>
+              <td className="muted">{t(formatValue(row.budget, "currency", language))}</td>
               <td data-assessment={row.assessment}>
-                {t(formatDelta(row.variance, "currency"))}
+                {t(formatDelta(row.variance, "currency", language))}
                 <span className="sr-only">, {t(assessmentLabels[row.assessment])}</span>
               </td>
               <td data-assessment={row.assessment}>
                 {t(
-                  row.variancePercent === null ? "—" : formatDelta(row.variancePercent, "percent"),
+                  row.variancePercent === null
+                    ? "—"
+                    : formatDelta(row.variancePercent, "percent", language),
                 )}
               </td>
             </tr>

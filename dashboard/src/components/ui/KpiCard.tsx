@@ -21,7 +21,7 @@ export function KpiCard({
   index: number;
   insight?: MetricInsight;
 }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const comparison = metric.comparison;
   return (
@@ -42,8 +42,8 @@ export function KpiCard({
       <div className="kpi-value tabular">
         {t(
           metric.unit === "currency" && metric.value !== null
-            ? formatCompactCurrency(metric.value)
-            : formatValue(metric.value, metric.unit),
+            ? formatCompactCurrency(metric.value, language)
+            : formatValue(metric.value, metric.unit, language),
         )}
       </div>
       <div className="kpi-comparison" data-assessment={comparison?.assessment ?? "unknown"}>
@@ -53,7 +53,7 @@ export function KpiCard({
               {t(comparison.direction === "up" ? "↗" : comparison.direction === "down" ? "↘" : "→")}
             </span>
             {t(" ")}
-            {t(formatDelta(comparison.value, comparison.unit))}
+            {t(formatDelta(comparison.value, comparison.unit, language))}
             {t(" ")}
             <span className="sr-only">{t(assessmentLabels[comparison.assessment])}, </span>
             <span className="comparison-label">{t(comparison.label)}</span>
