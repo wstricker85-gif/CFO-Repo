@@ -1,3 +1,4 @@
+import { buildReportAnalysis } from "./report-analysis.ts";
 import { translate } from "./i18n.ts";
 import type { DemoRules } from "./demo-policy.ts";
 import { getKpis } from "./demo-company.ts";
@@ -25,6 +26,7 @@ export function buildReport(
   const income = getIncomeStatement(snapshot.id),
     balance = getBalanceStatement(snapshot.id),
     historicalCash = getCashflowStatement(snapshot.id);
+  const analysis = buildReportAnalysis(snapshot, options.rules);
   const statementSummary = [
     { label: "Periodenergebnis nach Steuern", value: income.netIncome },
     { label: "Bilanzsumme zum Stichtag", value: balance.totals.assets },
@@ -79,6 +81,26 @@ export function buildReport(
           "",
           ...statementSummary.map((r) => `- ${r.label}: ${formatValue(r.value, "currency")}.`),
           "",
+          "## Ergebnisbeiträge gegenüber Plan",
+          ...analysis.effects.map(
+            (r) => `- ${translate(r.label)}: ${formatDelta(r.value, "currency")}`,
+          ),
+          "",
+          "## Jahresverlauf",
+          ...analysis.trend.map(
+            (r) =>
+              `- ${translate(r.month)}: ${translate("Umsatz")} ${formatCompactCurrency(r.revenue)}; ${translate("Plan")} ${formatCompactCurrency(r.budget)}; ${translate("EBITDA-Marge")} ${formatValue(r.margin, "percent")}`,
+          ),
+          "",
+          ...(options.includeRisks
+            ? [
+                "## Forderungsalter: offene Rechnungsbeträge",
+                ...analysis.aging.map(
+                  (r) => `- ${translate(r.label)}: ${formatCompactCurrency(r.value)}`,
+                ),
+                "",
+              ]
+            : []),
           "## Ergebnisrechnung",
           "",
           "| Position | Ist | Plan | Abweichung |",
@@ -130,6 +152,7 @@ export function buildReport(
     risks,
     forecast,
     statementSummary,
+    analysis,
     markdown: lines
       .map((line) => (line === options.notes.trim() ? line : translate(line)))
       .join("\n"),

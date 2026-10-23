@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { getLocale } from "@/lib/i18n";
 import { useTranslation } from "@/components/i18n/Language";
 import { useState, useSyncExternalStore } from "react";
@@ -225,10 +226,10 @@ export function WorkingCapital() {
           </label>
           <label className="select-control">
             {t(" Sortieren ")}
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+            <Select value={sort} onChange={(e) => setSort(e.target.value)}>
               <option value="due">{t("Fälligkeit")}</option>
               <option value="amount">{t("Betrag absteigend")}</option>
-            </select>
+            </Select>
           </label>
           {bucket !== "all" && (
             <button className="text-button" onClick={() => setBucket("all")}>

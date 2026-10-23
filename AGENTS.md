@@ -14,14 +14,16 @@ agents share one source of truth.
   keep statements, capital KPIs, working capital and reports reconciled to this ledger.
 - `agents/`: six product-agent specifications, not executable coding agents.
 - `docs/`: architecture, data requirements, financial conventions and design reference.
-- Python/FastAPI, uploads, authentication, agent execution and market APIs are planned.
-  Never describe demo results as live data or AI-generated analysis.
+- Python/FastAPI, uploads, authentication and agent execution are planned.
+  Public FX/ECB adapters are implemented and validated separately from fictional
+  company data. Never describe demo company results as live or AI-generated.
 
 ## Active product focus
 
 Real-data integration is parked. Prioritize the public interactive demo with fictional
 data and concise explanatory hover/focus/touch panels. Static export defaults to the
-website mount path `/cfo-demo`; no deployment or website edits have been performed.
+website mount path `/cfo-demo`, with a PHP market adapter for ALL-INKL. The website
+workflow builds both repositories before FTPS deployment; see `docs/demo-publishing.md`.
 
 ## Architecture rules
 

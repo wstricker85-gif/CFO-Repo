@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { getLocale } from "@/lib/i18n";
 import { useTranslation } from "@/components/i18n/Language";
 import Link from "next/link";
@@ -311,10 +312,10 @@ export function IfrsBridge() {
           </div>
           <label className="select-control">
             {t(" Einheit ")}
-            <select value={scale} onChange={(e) => setScale(e.target.value as "eur" | "thousand")}>
+            <Select value={scale} onChange={(e) => setScale(e.target.value as "eur" | "thousand")}>
               <option value="thousand">{t("Tsd. €")}</option>
               <option value="eur">{t("EUR")}</option>
-            </select>
+            </Select>
           </label>
         </div>
         <BridgeTable

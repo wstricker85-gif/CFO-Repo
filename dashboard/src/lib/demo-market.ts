@@ -1,13 +1,7 @@
 export const demoCurrencies = ["EUR", "USD", "CHF", "GBP", "PLN"] as const;
 export type DemoCurrency = (typeof demoCurrencies)[number];
 
-export type LiveMarket = {
-  rates: Record<DemoCurrency, number>;
-  ecbRate: number | null;
-  asOf: string;
-  source: string;
-  fetchedAt: string;
-};
+export type { LiveMarket } from "./market-contract.ts";
 
 export function getDemoMarket(period: string) {
   const september = period === "2026-09";

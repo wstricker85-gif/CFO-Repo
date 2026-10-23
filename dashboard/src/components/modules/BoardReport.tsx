@@ -2,6 +2,7 @@
 import { useTranslation } from "@/components/i18n/Language";
 import { useState } from "react";
 import { getKpis } from "@/lib/demo-company";
+import { ReportAnalysis, ReportForecast } from "@/components/shared/ReportAnalysis";
 import { buildReport } from "@/lib/report";
 import { downloadText } from "@/lib/export";
 import { formatValue, statusLabels } from "@/lib/format";
@@ -24,6 +25,7 @@ export function BoardReport() {
     notes: currentNotes,
     rules,
   });
+  const analysis = report.analysis;
   return (
     <ModulePage
       eyebrow={t("Board Report")}
@@ -112,160 +114,115 @@ export function BoardReport() {
             </p>
           </div>
         </aside>
-        <article className="report-sheet" aria-label={t("Berichtsvorschau")}>
-          <header className="report-sheet-header">
-            <div>
-              <span className="report-brand">{t("STRICKER INTERIM")}</span>
-              <span className="report-type">
-                {t("CFO ")}
-                {t(full ? "Board Pack" : "Executive Flash")}
-              </span>
-            </div>
-            <span className="demo-badge">{t("Demo")}</span>
-          </header>
-          <div className="report-sheet-body">
-            <p className="eyebrow">
-              {t("Mittelstand GmbH · ")}
-              {t(snapshot.label)}
-            </p>
-            <h2 className="report-headline">{t(snapshot.headline)}</h2>
-            <p className="report-lead">{t(snapshot.summary)}</p>
-            <div className="report-kpis">
-              {snapshot.result.metrics.map((m) => (
-                <div key={m.id}>
-                  <span className="label">{t(m.label)}</span>
-                  <strong>{t(formatValue(m.value, m.unit))}</strong>
-                  <span className="status" data-status={m.status}>
-                    <span className="status-dot" />
-                    {t(statusLabels[m.status])}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {full && (
-              <section className="report-section">
-                <h3>{t("CFO-Kommentar")}</h3>
-                {report.paragraphs.map((p, i) => (
-                  <p key={i}>{t(p)}</p>
+        <div className="report-preview-frame">
+          <article className="report-sheet" aria-label={t("Berichtsvorschau")} tabIndex={0}>
+            <header className="report-sheet-header">
+              <div>
+                <span className="report-brand">{t("STRICKER INTERIM")}</span>
+                <span className="report-type">
+                  {t("CFO ")}
+                  {t(full ? "Board Pack" : "Executive Flash")}
+                </span>
+              </div>
+              <span className="demo-badge">{t("Demo")}</span>
+            </header>
+            <div className="report-sheet-body">
+              <p className="eyebrow">
+                {t("Mittelstand GmbH · ")}
+                {t(snapshot.label)}
+              </p>
+              <h2 className="report-headline">{t(snapshot.headline)}</h2>
+              <p className="report-lead">{t(snapshot.summary)}</p>
+              <div className="report-kpis">
+                {snapshot.result.metrics.map((m) => (
+                  <div key={m.id}>
+                    <span className="label">{t(m.label)}</span>
+                    <strong>{t(formatValue(m.value, m.unit))}</strong>
+                    <span className="status" data-status={m.status}>
+                      <span className="status-dot" />
+                      {t(statusLabels[m.status])}
+                    </span>
+                  </div>
                 ))}
-              </section>
-            )}
-            {full && (
-              <section className="report-section">
-                <h3>{t("Bilanz, GuV und historischer Cashflow")}</h3>
-                <dl className="report-statement-summary">
-                  {report.statementSummary.map((row) => (
-                    <div key={row.label}>
-                      <dt>{t(row.label)}</dt>
-                      <dd>{t(formatValue(row.value, "currency"))}</dd>
+              </div>
+              {full && (
+                <ReportAnalysis
+                  data={analysis}
+                  includeRisks={includeRisks}
+                  commentary={report.paragraphs[0]}
+                />
+              )}
+              {includeRisks && (
+                <section className="report-section">
+                  <h3>{t("Risiken & Datenlücken")}</h3>
+                  <ul>
+                    {report.risks.map((r) => (
+                      <li key={r}>{t(r)}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+              {includeCash && (
+                <section className={`report-section ${full ? "report-chapter" : ""}`}>
+                  <h3>{t("Liquiditätsvorschau")}</h3>
+                  <p>{t("Eigenständige fiktive Zahlungsannahmen; keine Ableitung aus der GuV.")}</p>
+                  {full ? (
+                    <ReportForecast data={analysis} />
+                  ) : (
+                    <div className="report-cash">
+                      {report.forecast.map((m) => (
+                        <div key={m.month}>
+                          <span>{t(m.month)} 2026</span>
+                          <strong>{formatValue(m.closing, "currency")}</strong>
+                          <span>{t("Endbestand")}</span>
+                        </div>
+                      ))}
                     </div>
+                  )}
+                </section>
+              )}
+              <section className="report-section">
+                <h3>{t("Empfohlene Maßnahmen")}</h3>
+                <ol>
+                  {snapshot.actions.map((a) => (
+                    <li key={a.id}>
+                      <strong>{t(a.title)}.</strong> {t(a.owner)} {t(" · Demo-Zieldatum ")}
+                      {t(a.due)}.
+                    </li>
                   ))}
-                </dl>
+                </ol>
+              </section>
+              {currentNotes.trim() && (
+                <section className="report-section">
+                  <h3>{t("Management-Ergänzungen")}</h3>
+                  <p className="report-user-notes">{currentNotes}</p>
+                </section>
+              )}
+              <footer className="report-footnotes">
+                <strong>{t("Datenbasis & Annahmen")}</strong>
                 <p>
                   {t(
-                    " Historische Monatswerte und Stichtagsbestände der Demo; getrennt von der folgenden Liquiditätsvorschau. ",
+                    getKpis(period, rules)
+                      .filter((d) => d.rule)
+                      .map(
+                        (d) =>
+                          `${d.metric.label}: ${d.rule!.direction === "higher" ? "≥" : "≤"} ${formatValue(d.rule!.good, d.metric.unit)}`,
+                      )
+                      .join(" · "),
                   )}
                 </p>
-              </section>
-            )}
-            {full && (
-              <section className="report-section">
-                <h3>{t("Ergebnisrechnung")}</h3>
-                <div className="table-scroll">
-                  <table className="data-table report-data-table">
-                    <caption className="sr-only">
-                      {t("Ergebnisrechnung aus dem Demoabschluss")}
-                    </caption>
-                    <thead>
-                      <tr>
-                        <th scope="col">{t("Position")}</th>
-                        <th scope="col" className="number-cell">
-                          {t(" Ist EUR ")}
-                        </th>
-                        <th scope="col" className="number-cell">
-                          {t(" Plan EUR ")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {snapshot.rows.map((r) => (
-                        <tr key={r.label}>
-                          <th scope="row">{t(r.label)}</th>
-                          <td className="number-cell">{t(formatValue(r.actual, "currency"))}</td>
-                          <td className="number-cell">{t(formatValue(r.budget, "currency"))}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
-            {includeRisks && (
-              <section className="report-section">
-                <h3>{t("Risiken & Datenlücken")}</h3>
-                <ul>
-                  {report.risks.map((r) => (
-                    <li key={r}>{t(r)}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-            {includeCash && (
-              <section className="report-section">
-                <h3>{t("Liquiditätsvorschau")}</h3>
-                <p>{t("Eigenständige fiktive Zahlungsannahmen; keine Ableitung aus der GuV.")}</p>
-                <div className="report-cash">
-                  {report.forecast.map((m) => (
-                    <div key={m.month}>
-                      <span>{t(m.month)} 2026</span>
-                      <strong>{t(formatValue(m.closing, "currency"))}</strong>
-                      <span>{t("Endbestand")}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-            <section className="report-section">
-              <h3>{t("Empfohlene Maßnahmen")}</h3>
-              <ol>
-                {snapshot.actions.map((a) => (
-                  <li key={a.id}>
-                    <strong>{t(a.title)}.</strong> {t(a.owner)} {t(" · Demo-Zieldatum ")}
-                    {t(a.due)}.
-                  </li>
-                ))}
-              </ol>
-            </section>
-            {currentNotes.trim() && (
-              <section className="report-section">
-                <h3>{t("Management-Ergänzungen")}</h3>
-                <p className="report-user-notes">{currentNotes}</p>
-              </section>
-            )}
-            <footer className="report-footnotes">
-              <strong>{t("Datenbasis & Annahmen")}</strong>
-              <p>
-                {t(
-                  getKpis(period, rules)
-                    .filter((d) => d.rule)
-                    .map(
-                      (d) =>
-                        `${d.metric.label}: ${d.rule!.direction === "higher" ? "≥" : "≤"} ${formatValue(d.rule!.good, d.metric.unit)}`,
-                    )
-                    .join(" · "),
-                )}
-              </p>
-              <p>
-                {t(" Fiktiver Demo-Monatsabschluss · ")}
-                {t(snapshot.result.period.start)} {t(" bis ")}
-                {t(snapshot.end)}{" "}
-                {t(
-                  " · EUR. Zielwerte gemäß „Annahmen & Ziele“ dieser Sitzung. Working Capital mit Stichtags-Proxys. Keine unabhängige Prüfung, keine ausgeführte KI-Analyse, keine bestätigte Maßnahmenumsetzung. ",
-                )}
-              </p>
-            </footer>
-          </div>
-        </article>
+                <p>
+                  {t(" Fiktiver Demo-Monatsabschluss · ")}
+                  {t(snapshot.result.period.start)} {t(" bis ")}
+                  {t(snapshot.end)}{" "}
+                  {t(
+                    " · EUR. Zielwerte gemäß „Annahmen & Ziele“ dieser Sitzung. Working Capital mit Stichtags-Proxys. Keine unabhängige Prüfung, keine ausgeführte KI-Analyse, keine bestätigte Maßnahmenumsetzung. ",
+                  )}
+                </p>
+              </footer>
+            </div>
+          </article>
+        </div>
       </div>
     </ModulePage>
   );

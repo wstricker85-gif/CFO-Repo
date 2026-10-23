@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { useTranslation } from "@/components/i18n/Language";
 import { useId, useState } from "react";
 import { csvColumns, type ImportedMonth } from "@/lib/csv";
@@ -29,14 +30,14 @@ export function CsvAnalysis({ rows }: { rows: ImportedMonth[] }) {
       <div className="module-toolbar csv-analysis-controls">
         <label className="select-control">
           {t(" Ergebniszeitraum ")}
-          <select value={period} onChange={(e) => setSelected(e.target.value)}>
+          <Select value={period} onChange={(e) => setSelected(e.target.value)}>
             <option value="all">{t("Gesamter Dateizeitraum")}</option>
             {rows.map((r) => (
               <option key={r.month} value={r.month}>
                 {t(r.month)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <span className="small-muted">
           {result.count} {t(" ausgewertete Monate · Bilanzbestände: Ende ")}

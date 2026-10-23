@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { getLocale } from "@/lib/i18n";
 import { useTranslation } from "@/components/i18n/Language";
 import { useDemo } from "./DemoProvider";
@@ -21,13 +22,13 @@ export function PeriodSelect() {
         <rect x="3" y="4" width="14" height="13" />
         <path d="M3 8h14M7 2v4m6-4v4" />
       </svg>
-      <select value={period} onChange={(event) => setPeriod(event.target.value)}>
+      <Select value={period} onChange={(event) => setPeriod(event.target.value)}>
         {snapshots.map((s) => (
           <option value={s.id} key={s.id}>
             {t(s.label)}
           </option>
         ))}
-      </select>
+      </Select>
     </label>
   );
 }

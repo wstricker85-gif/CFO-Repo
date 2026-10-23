@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { useTranslation } from "@/components/i18n/Language";
 import Link from "next/link";
 import { useState } from "react";
@@ -189,18 +190,18 @@ export function DataWorkspace() {
         <div className="import-options">
           <label>
             {t(" Trennzeichen ")}
-            <select value={delimiter} onChange={(e) => setDelimiter(e.target.value)}>
+            <Select value={delimiter} onChange={(e) => setDelimiter(e.target.value)}>
               <option value=";">{t("Semikolon ;")}</option>
               <option value=",">{t("Komma ,")}</option>
               <option value={"\t"}>{t("Tabulator")}</option>
-            </select>
+            </Select>
           </label>
           <label>
             {t(" Zahlenformat ")}
-            <select value={locale} onChange={(e) => setLocale(e.target.value as "de" | "en")}>
+            <Select value={locale} onChange={(e) => setLocale(e.target.value as "de" | "en")}>
               <option value="de">{t("Deutsch · 1.234,56")}</option>
               <option value="en">{t("Englisch · 1,234.56")}</option>
-            </select>
+            </Select>
           </label>
         </div>
         <p>

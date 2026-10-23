@@ -2,6 +2,7 @@
 import { useTranslation } from "@/components/i18n/Language";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { metricPanelPosition } from "@/lib/tooltip-layout";
 import type { MetricInsight } from "@/lib/insights";
 
 const openEvent = "cfo:metric-info-open";
@@ -10,15 +11,17 @@ function positionFor(button: HTMLButtonElement, panel: HTMLDivElement | null) {
   // Covering the card can repeatedly remove/re-enter its CSS hover state.
   const anchor = button.closest<HTMLElement>("[data-metric-hover]") ?? button;
   const rect = anchor.getBoundingClientRect();
-  const width = Math.min(340, window.innerWidth - 32);
-  const height = Math.min(panel?.offsetHeight ?? 285, window.innerHeight - 32);
-  const left = Math.max(16, Math.min(rect.right - width, window.innerWidth - width - 16));
-  const below = Math.max(0, window.innerHeight - rect.bottom - 28);
-  const above = Math.max(0, rect.top - 28);
-  if (below >= height || below >= above) {
-    return { left, top: rect.bottom + 12, width, maxHeight: Math.max(1, below) };
-  }
-  return { left, top: Math.max(16, rect.top - height - 12), width, maxHeight: Math.max(1, above) };
+  const viewport = window.visualViewport;
+  return metricPanelPosition(
+    rect,
+    {
+      width: viewport?.width ?? window.innerWidth,
+      height: viewport?.height ?? window.innerHeight,
+      left: viewport?.offsetLeft ?? 0,
+      top: viewport?.offsetTop ?? 0,
+    },
+    panel?.offsetHeight ?? 285,
+  );
 }
 
 /** Concise hover tooltip; activating the trigger opens a nonmodal methodology dialog. */
@@ -121,6 +124,8 @@ export function MetricInfo({ insight }: { insight: MetricInsight }) {
     };
     const frame = requestAnimationFrame(reposition);
     window.addEventListener("resize", reposition);
+    window.visualViewport?.addEventListener("resize", reposition);
+    window.visualViewport?.addEventListener("scroll", reposition);
     window.addEventListener("scroll", reposition, true);
     window.addEventListener(openEvent, another);
     document.addEventListener("pointerdown", outside);
@@ -128,6 +133,8 @@ export function MetricInfo({ insight }: { insight: MetricInsight }) {
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", reposition);
+      window.visualViewport?.removeEventListener("resize", reposition);
+      window.visualViewport?.removeEventListener("scroll", reposition);
       window.removeEventListener("scroll", reposition, true);
       window.removeEventListener(openEvent, another);
       document.removeEventListener("pointerdown", outside);

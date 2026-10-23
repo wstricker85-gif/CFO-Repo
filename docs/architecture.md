@@ -347,3 +347,59 @@ Formatting uses de-DE or en-GB with EUR unchanged. CSV templates use the parser'
 existing English column aliases, and CSV decimal output follows the active locale.
 User-written report notes remain verbatim. Internal financial IDs, source data and
 filter values remain language-independent. Add catalog entries when adding UI copy.
+
+## Expanded board pack
+
+`report-analysis.ts` assembles numeric board evidence from the existing ledger,
+monthly/YTD P&L, open invoices, session targets and independent cash assumptions.
+`ReportAnalysis.tsx` displays the revenue/budget trend and monthly EBITDA margins,
+additive EBITDA variance contributions, earnings-to-net-income reconciliation,
+balance sheet uses/funding, historical cash waterfall and receivables ageing.
+The forecast shows receipts/payments, the lowest month-end balance and headroom
+against the session cash target; month-end coverage does not assert intra-month
+liquidity. Risk and forecast toggles retain their scope; Executive Flash stays short.
+The Board Pack print stylesheet starts analytical chapters on new A4 pages and
+keeps figures together, using explicit warm neutral chart colors in both themes.
+SVG and CSS charts remain vector graphics in browser-generated PDFs. Markdown
+contains the underlying trend and variance evidence instead of chart images.
+Financial tests reconcile cost contribution signs, YTD, ageing, balance funding,
+historical cash and forecast continuity. Actual browser pagination still needs
+visual verification when a browser connection is available.
+
+The desktop board preview uses a relative frame with an absolutely positioned,
+scrollable article, so only the editor determines the shared grid-row height.
+The long report cannot add blank scroll space below the grid. On stacked layouts
+the frame uses 75dvh. Print restores normal flow, unconstrained height and visible
+overflow for both elements so all report pages are exported.
+
+## Mobile code audit (browser verification pending)
+
+The narrow header moves the tour launcher into the expandable navigation at
+440px; launching it closes the menu. Coarse-pointer controls have larger touch
+areas, and editable text controls use 16px to avoid iOS focus zoom. Metric panel
+placement now respects the visual viewport (including its keyboard/pinch offsets)
+and falls back to a bounded scrollable panel when a card fills a short screen.
+Unit tests check portrait, landscape, keyboard-sized and desktop viewport bounds.
+These are geometry and code checks; they do not replace Safari/Chrome rendering,
+touch interaction, or device testing. Browser discovery currently returns no
+connected browser; practical mobile verification remains pending.
+
+All ten dropdown render sites use `components/ui/Select.tsx`: a native select in
+a shared wrapper with a decorative CSS chevron inset 15px from the right. The
+chevron ignores pointer events; keyboard and native mobile picker behavior are
+preserved. Forced-colors mode restores the system arrow.
+
+## ALL-INKL deployment and validated market adapters
+
+The production demo is prepared for `/cfo-demo/` on the existing PHP webspace.
+`build-demo.mjs` stages a copy of the app without Next server API routes, exports
+all fifteen pages and adds the PHP market adapter. The build-time market URL is
+base-path aware. A normal local Node deployment still uses `/api/market`.
+`market-contract.ts` validates EUR FX values and dated ECB deposit observations;
+`market-service.ts` bounds requests, preserves an unavailable ECB value as null
+and never fabricates live FX. The PHP adapter uses the same response contract.
+The deposit facility rate is a market indicator, not an automatic DCF input.
+The website's existing FTPS workflow runs code/static/PHP HTTP checks before upload
+and performs public HTTP checks afterwards. No account purchase or new hosting
+subscription is part of this configuration. A language query parameter carries
+the website's language into the app without sending source financial data.

@@ -587,13 +587,13 @@ export const english: Record<string, string> = {
   "Lade Marktdaten…": "Loading market data…",
   "Kurse fallen auf fiktive Demo-Annahmen zurück.":
     "Rates fall back to fictional demo assumptions.",
-  "FX-Kurse werden von Frankfurter.app abgerufen.":
-    "Exchange rates are requested from Frankfurter.app.",
-  "FX-Kurse via Frankfurter.app (EZB-Referenzkurse), Stand":
-    "FX via Frankfurter.app (ECB reference rates), as of",
+  "FX-Kurse werden von Frankfurter.dev abgerufen.":
+    "Exchange rates are requested from Frankfurter.dev.",
+  "FX-Kurse via Frankfurter.dev (EZB-Referenzkurse), Stand":
+    "FX via Frankfurter.dev (ECB reference rates), as of",
   "EZB · Einlagefazilität": "ECB · deposit facility",
   "EZB-Einlagefazilität · aktueller Beschluss": "ECB deposit facility · current decision",
-  "Frankfurter.app · EZB-Referenzkurse": "Frankfurter.app · ECB reference rates",
+  "Frankfurter.dev · EZB-Referenzkurse": "Frankfurter.dev · ECB reference rates",
   "Keine reale Zinskurve oder Laufzeitreferenz":
     "Not a market yield curve or maturity-specific rate",
   "Peer-Median · Demo": "Peer median · demo",
@@ -800,7 +800,7 @@ export const english: Record<string, string> = {
   "Interaktives Rechenbeispiel.": "Interactive calculation example.",
   "Management-GuV der Demo": "Demo management income statement",
   Marge: "Margin",
-  "Mittelstand GmbH ·": "Mittelstand GmbH ·",
+  "Mittelstand GmbH ·": "Sample Company Ltd. ·",
   "Nach Material und Fremdleistungen": "After materials and external services",
   "Plan: gewählter Zeitraum · Vormonat: letzter ausgewerteter Monat":
     "Budget: selected period · previous month: final month in the selection",
@@ -1558,7 +1558,7 @@ export const english: Record<string, string> = {
   "## Empfohlene Maßnahmen": "## Suggested actions",
   "## Management-Ergänzungen": "## Management notes",
   "## Datenbasis & Annahmen": "## Sources & assumptions",
-  "- Unternehmen: Mittelstand GmbH (fiktiv).": "- Company: Mittelstand GmbH (fictional).",
+  "- Unternehmen: Mittelstand GmbH (fiktiv).": "- Company: Sample Company Ltd. (fictional).",
   "- Quelle: lokal hinterlegter Demo-Monatsabschluss; Beträge in EUR.":
     "- Source: locally stored demo monthly accounts; amounts in EUR.",
   "- Working Capital verwendet Stichtagsbestände als Näherung; Materialaufwand als Einkäufe-Proxy.":
@@ -1608,7 +1608,7 @@ export const english: Record<string, string> = {
   INTERIM: "INTERIM",
   "KPI Monitor": "KPI Monitor",
   Live: "Live",
-  "Mittelstand GmbH": "Mittelstand GmbH",
+  "Mittelstand GmbH": "Sample Company Ltd.",
   "Net Working Capital": "Net Working Capital",
   "Powered by Swissi AI": "Powered by Swissi AI",
   STRICKER: "STRICKER",
@@ -1721,3 +1721,80 @@ export const templates: Record<string, string> = {
   "EUR / PLN · {0}": "EUR / PLN · {0}",
   "EUR / USD · {0}": "EUR / USD · {0}",
 };
+
+// Evidence and print-friendly board pack analysis.
+Object.assign(english, {
+  "Management-Fokus": "Management focus",
+  "Ergebnis gegen Plan": "Earnings against budget",
+  "Das EBITDA liegt auf oder über Plan. Kostenabweichungen separat prüfen.":
+    "EBITDA is on or above budget. Review cost variances separately.",
+  "Das EBITDA liegt unter Plan. Umsatz- und Kosteneffekte gemeinsam prüfen.":
+    "EBITDA is below budget. Review revenue and cost effects together.",
+  "Operative Cash-Conversion": "Operating cash conversion",
+  "Operativer Cashflow geteilt durch EBITDA. Investitionen und Finanzierung folgen separat.":
+    "Operating cash flow divided by EBITDA. Investing and financing are reported separately.",
+  "Forderungslaufzeit gegen Ziel": "Days sales outstanding against target",
+  "Die Forderungslaufzeit überschreitet das Sitzungsziel. Überfällige Rechnungen priorisieren.":
+    "DSO exceeds the session target. Prioritise overdue invoices.",
+  "Die Forderungslaufzeit liegt im Sitzungsziel. Zahlungsentwicklung weiter beobachten.":
+    "DSO meets the session target. Continue monitoring collections.",
+  "01 / Performance & Ergebnisqualität": "01 / Performance & earnings quality",
+  "Wachstum, Marge und Planabweichung": "Growth, margin and budget variance",
+  "Umsatz und EBITDA-Marge im Jahresverlauf": "Revenue and EBITDA margin through the year",
+  "Umsatz in Tsd. EUR": "Revenue in EUR thousands",
+  "Umsatz YTD": "YTD revenue",
+  "EBITDA YTD": "YTD EBITDA",
+  "YTD umfasst Januar bis zum Berichtsmonat; der letzte Balken zeigt den ausgewählten Monat. Die Marge ist je Monat berechnet.":
+    "YTD covers January through the reporting month; the final bar shows the selected month. The margin is calculated for each month.",
+  "EBITDA-Planbrücke: Ergebnisbeiträge im Monat":
+    "EBITDA budget bridge: monthly earnings contributions",
+  Umsatzbeitrag: "Revenue contribution",
+  Materialeffekt: "Materials effect",
+  Personaleffekt: "Personnel effect",
+  "Sonstiger Kosteneffekt": "Other cost effect",
+  "Plan-EBITDA": "Budget EBITDA",
+  "Ist-EBITDA": "Actual EBITDA",
+  "Positive Beiträge erhöhen das Ergebnis gegenüber Plan; negative Beiträge mindern es. Die Beiträge addieren sich zur EBITDA-Abweichung. Preis, Menge und Mix sind nicht getrennt verfügbar.":
+    "Positive contributions increase earnings against budget; negative contributions reduce them. Contributions add up to the EBITDA variance. Price, volume and mix are not separately available.",
+  "Vom operativen Ergebnis zum Periodengewinn": "From operating earnings to net income",
+  "02 / Kapital & Liquidität": "02 / Capital & liquidity",
+  "Bilanzstruktur und Geldbewegungen": "Balance sheet structure and cash movements",
+  "Mittelverwendung am Stichtag": "Use of funds at the reporting date",
+  "Finanzierung am Stichtag": "Funding at the reporting date",
+  "Sonstiges Umlaufvermögen": "Other current assets",
+  "Langfristiges Fremdkapital": "Non-current liabilities",
+  "Kurzfristiges Fremdkapital": "Current liabilities",
+  "Historischer Cashflow: vom Anfangs- zum Endbestand":
+    "Historical cash flow: opening to closing cash",
+  "Working-Capital-Effekt": "Working capital effect",
+  "Der Working-Capital-Effekt zeigt die Cash-Wirkung aus Forderungen, Vorräten und Lieferverbindlichkeiten. Ein positiver Wert setzt Cash frei. Free Cashflow entspricht operativem Cashflow plus Investitions-Cashflow.":
+    "The working capital effect shows cash movements from receivables, inventories and trade payables. A positive value releases cash. Free cash flow equals operating plus investing cash flow.",
+  "Forderungsalter: offene Rechnungsbeträge": "Receivables ageing: outstanding invoices",
+  "Noch nicht fällig": "Not yet due",
+  "1–30 Tage überfällig": "1–30 days overdue",
+  "31–60 Tage überfällig": "31–60 days overdue",
+  "Über 60 Tage überfällig": "Over 60 days overdue",
+  "Die Altersklassen ergeben zusammen die bilanziellen Forderungen. Überfällig bedeutet noch keinen bestätigten Zahlungsausfall.":
+    "The ageing buckets add up to balance sheet receivables. Overdue does not mean a confirmed default.",
+  "Vorschau: Endbestand der liquiden Mittel": "Forecast: closing cash balances",
+  "Sitzungsziel Mindestbestand": "Session minimum cash target",
+  "Niedrigster Monatsendbestand": "Lowest month-end cash balance",
+  "Abstand zum Mindestbestand": "Headroom above minimum cash",
+  "Alle prognostizierten Monatsendbestände erreichen den Mindestbestand. Untermonatige Engpässe sind damit nicht ausgeschlossen.":
+    "All forecast month-end balances meet the minimum cash target. This does not rule out cash shortages within a month.",
+  "Mindestens ein prognostizierter Monatsendbestand unterschreitet den Mindestbestand. Zahlungsplanung und Finanzierung prüfen.":
+    "At least one forecast month-end balance falls below the minimum cash target. Review payment planning and financing.",
+  "Zahlungsannahmen der Liquiditätsvorschau": "Payment assumptions underlying the cash forecast",
+  "Ergebnisbeiträge gegenüber Plan": "Earnings contributions against budget",
+  Jahresverlauf: "Year to date",
+});
+
+Object.assign(english, {
+  "Unternehmensdaten fiktiv · Marktdaten separat gekennzeichnet":
+    "Fictional company data · market data labelled separately",
+  "EZB-Einlagefazilität als Marktindikator. Kein laufzeitgerechter risikofreier DCF-Zins; die Bewertungsannahmen bleiben unabhängig.":
+    "The ECB deposit facility rate is a market indicator, not a maturity-matched risk-free DCF rate; valuation assumptions remain independent.",
+});
+Object.assign(templates, {
+  "EZB-Einlagefazilität · Stand {0}": "ECB deposit facility · as of {0}",
+});

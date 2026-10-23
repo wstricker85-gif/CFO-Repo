@@ -5364,3 +5364,378 @@ input[type="range"] {
   margin-inline: 3px 9px;
   vertical-align: baseline;
 }
+
+/* Board pack evidence remains visible in the browser's PDF print output. */
+.report-figure {
+  margin: 22px 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.report-figure figcaption {
+  font: 600 12px/1.5 var(--font-sans);
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.report-trend svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.report-chart-legend {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 10px !important;
+}
+.report-chart-legend span:first-child {
+  color: var(--series-1);
+}
+.report-chart-legend span:nth-child(2) {
+  color: var(--chart-plan);
+}
+.report-evidence-bars {
+  display: grid;
+  gap: 13px;
+}
+.report-evidence-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(50px, 1.3fr) auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 11px;
+}
+.report-evidence-row strong {
+  font: 11px var(--font-mono);
+  text-align: right;
+  white-space: nowrap;
+}
+.report-bar-track {
+  background: var(--wash);
+  height: 12px;
+}
+.report-bar-track > span {
+  display: block;
+  min-width: 0;
+  height: 100%;
+  background: var(--series-1);
+}
+.report-bar-track > span.is-negative {
+  background: var(--series-2);
+}
+.report-fact-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  padding: 12px 0;
+  border-block: 1px solid var(--line);
+  margin: 16px 0;
+  font-size: 11px;
+}
+.report-fact-line strong {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+.report-findings {
+  display: grid;
+  gap: 14px;
+}
+.report-findings > div {
+  border-left: 2px solid var(--series-1);
+  padding-left: 14px;
+}
+.report-findings strong {
+  display: block;
+  font: 24px var(--font-serif);
+  margin-block: 7px;
+}
+.report-findings p {
+  margin: 0;
+}
+.report-chapter {
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 2px solid var(--line);
+}
+.report-chapter h4 {
+  font: 18px var(--font-serif);
+  margin: 24px 0 12px;
+}
+.report-figure .cashflow-bridge {
+  overflow: visible;
+}
+.report-figure .cashflow-bridge svg {
+  min-width: 0;
+  width: 100%;
+}
+.report-forecast-evidence .report-data-table {
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .report-figure {
+    padding: 12px;
+  }
+  .report-evidence-row {
+    grid-template-columns: minmax(75px, 1fr) minmax(25px, 0.6fr) auto;
+    gap: 7px;
+    font-size: 10px;
+  }
+  .report-evidence-row strong {
+    font-size: 10px;
+  }
+}
+@media print {
+  @page {
+    size: A4;
+  }
+  .report-sheet {
+    --series-1: #85755e;
+    --series-2: #66615a;
+    --chart-plan: #35322e;
+    --flow-in: #85755e;
+    --flow-out: #66615a;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .report-chapter {
+    break-before: page;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .report-chapter > .eyebrow {
+    margin-top: 0;
+  }
+  .report-figure,
+  .report-fact-line,
+  .report-findings > div,
+  .report-statement-summary {
+    break-inside: avoid;
+  }
+  .report-figure {
+    padding: 12px;
+    margin: 16px 0;
+  }
+  .report-figure figcaption {
+    font-size: 10pt;
+  }
+  .report-evidence-row,
+  .report-evidence-row strong {
+    font-size: 9pt;
+  }
+  .report-section h4 {
+    break-after: avoid;
+  }
+  .report-chapter .report-data-table th,
+  .report-chapter .report-data-table td {
+    padding: 7px 5px;
+  }
+  .report-section p {
+    orphans: 3;
+    widows: 3;
+  }
+}
+
+/* A dedicated viewport excludes report length from the surrounding grid sizing. */
+.report-preview-frame {
+  min-width: 0;
+  min-height: 0;
+}
+@media screen and (min-width: 1101px) {
+  .report-workspace {
+    align-items: stretch;
+  }
+  .report-editor {
+    position: static;
+  }
+  .report-preview-frame {
+    position: relative;
+    overflow: hidden;
+  }
+  .report-preview-frame > .report-sheet {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .report-preview-frame {
+    height: 75vh;
+    height: 75dvh;
+    min-height: 300px;
+  }
+  .report-preview-frame > .report-sheet {
+    height: 100%;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+}
+@media screen {
+  .report-sheet:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+  }
+}
+@media print {
+  .report-preview-frame,
+  .report-preview-frame > .report-sheet {
+    position: static;
+    contain: none;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+}
+
+/* Mobile controls: retain text-only language links and avoid iOS input zoom. */
+.mobile-tour-launcher {
+  display: none;
+}
+@media screen and (max-width: 440px) {
+  .mast .tour-launcher {
+    display: none;
+  }
+  .mobile-tour-launcher {
+    display: block;
+    padding: 12px 22px;
+  }
+}
+@media screen and (max-width: 760px) and (pointer: coarse) {
+  .language-toggle button,
+  .theme-toggle,
+  .metric-info-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .metric-info-button {
+    width: 44px;
+    height: 44px;
+  }
+  .filter-pills button,
+  .button,
+  .text-button,
+  .mobile-nav-toggle,
+  .nav-item,
+  .tour-launcher {
+    min-height: 44px;
+  }
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  .table-scroll,
+  .report-sheet,
+  .sidebar-content {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+@media print {
+  .mobile-tour-launcher {
+    display: none;
+  }
+}
+
+/* Compact metric headings preserve the existing mobile card layout. */
+.kpi-top,
+.summary-stat-heading,
+.metric-heading,
+.ifrs-tax-title {
+  min-width: 0;
+}
+.kpi-top > .label,
+.summary-stat-heading > .label,
+.metric-heading > h2,
+.ifrs-tax-title > strong {
+  min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.metric-info-button {
+  flex-shrink: 0;
+}
+@media screen and (max-width: 760px) {
+  .kpi-top,
+  .summary-stat-heading,
+  .metric-heading,
+  .ifrs-tax-title {
+    gap: 4px;
+  }
+  .kpi-top > .label,
+  .summary-stat-heading > .label {
+    font-size: 9px;
+    letter-spacing: 0.02em;
+  }
+  .metric-info-button {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+  .metric-info-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .kpi-meta {
+    gap: 3px;
+  }
+}
+@media screen and (max-width: 440px) {
+  .kpi-card {
+    padding-inline: 12px;
+  }
+  .kpi-top > .label,
+  .summary-stat-heading > .label {
+    font-size: 8px;
+  }
+  .kpi-index {
+    display: none;
+  }
+}
+
+/* All dropdowns share one inset chevron and retain native picker behavior. */
+.select-shell {
+  position: relative;
+  display: inline-grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.select-shell > select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding-right: 36px;
+}
+.select-shell::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.period-control .select-shell {
+  flex: 1;
+  width: auto;
+}
+.select-control .select-shell {
+  width: auto;
+}
+@media (forced-colors: active) {
+  .select-shell > select {
+    appearance: auto;
+    -webkit-appearance: auto;
+  }
+  .select-shell::after {
+    display: none;
+  }
+}

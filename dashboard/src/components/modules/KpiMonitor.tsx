@@ -1,4 +1,5 @@
 "use client";
+import { Select } from "@/components/ui/Select";
 import { useTranslation } from "@/components/i18n/Language";
 import { useState, useSyncExternalStore } from "react";
 import { metricInsight } from "@/lib/insights";
@@ -217,14 +218,14 @@ export function KpiMonitor() {
         </label>
         <label className="select-control">
           {t(" Status ")}
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <Select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="Alle">{t("Alle")}</option>
             {["good", "watch", "warning", "unavailable"].map((s) => (
               <option value={s} key={s}>
                 {t(statusLabels[s as keyof typeof statusLabels])}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <span className="results-count" role="status">
           {filtered.length} {t(" von ")}

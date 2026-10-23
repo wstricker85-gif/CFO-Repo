@@ -1,4 +1,6 @@
 "use client";
+import { liveMarketSchema } from "@/lib/market-contract";
+import { Select } from "@/components/ui/Select";
 import { getLocale } from "@/lib/i18n";
 import { useTranslation } from "@/components/i18n/Language";
 import { useState, useEffect } from "react";
@@ -25,16 +27,29 @@ export function MarketData() {
   const [liveError, setLiveError] = useState(false);
 
   useEffect(() => {
-    fetch("/api/market")
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    let active = true;
+    fetch(process.env.NEXT_PUBLIC_MARKET_PATH ?? "/api/market", { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: LiveMarket) => setLive(d))
-      .catch(() => setLiveError(true));
+      .then((data: unknown) => {
+        if (active) setLive(liveMarketSchema.parse(data));
+      })
+      .catch(() => {
+        if (active) setLiveError(true);
+      })
+      .finally(() => clearTimeout(timeout));
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   const isLive = live !== null;
   const rates = live?.rates ?? demo.rates;
   const asOf = live?.asOf ?? demo.asOf;
-  const riskFree = live?.ecbRate ?? demo.riskFree;
+  const depositRate = live?.ecbRate ?? demo.riskFree;
 
   const [from, setFrom] = useState<DemoCurrency>("EUR"),
     [to, setTo] = useState<DemoCurrency>("USD"),
@@ -54,7 +69,7 @@ export function MarketData() {
         </>
       }
       description={t("FX-Szenarien, fiktive Vergleichsunternehmen und transparente Datenquellen.")}
-      context={t("Fiktive Marktannahmen")}
+      context={t("Unternehmensdaten fiktiv · Marktdaten separat gekennzeichnet")}
       action={
         <button
           className="button"
@@ -83,7 +98,7 @@ export function MarketData() {
           <span aria-hidden="true">◎</span>
           <p>
             <strong>{t("Live-Daten aktiv.")}</strong>{" "}
-            {t(" FX-Kurse via Frankfurter.app (EZB-Referenzkurse), Stand ")}
+            {t(" FX-Kurse via Frankfurter.dev (EZB-Referenzkurse), Stand ")}
             {t(asOf)}
             {t(". Peer-Multiples bleiben fiktive Demo-Annahmen. ")}
           </p>
@@ -97,7 +112,7 @@ export function MarketData() {
             {t(
               liveError
                 ? "Kurse fallen auf fiktive Demo-Annahmen zurück."
-                : "FX-Kurse werden von Frankfurter.app abgerufen.",
+                : "FX-Kurse werden von Frankfurter.dev abgerufen.",
             )}
           </p>
         </div>
@@ -120,10 +135,10 @@ export function MarketData() {
         />
         <SummaryStat
           label={`EZB-Einlagensatz · ${live?.ecbRate != null ? "Live" : "Demo"}`}
-          value={formatValue(riskFree, "percent")}
+          value={formatValue(depositRate, "percent")}
           detail={t(
             live?.ecbRate != null
-              ? "EZB-Einlagefazilität · aktueller Beschluss"
+              ? `EZB-Einlagefazilität · Stand ${live.ecbAsOf}`
               : "Keine reale Zinskurve oder Laufzeitreferenz",
           )}
         />
@@ -150,13 +165,13 @@ export function MarketData() {
             <div className="fx-currencies">
               <label>
                 {t(" Von ")}
-                <select value={from} onChange={(e) => setFrom(e.target.value as DemoCurrency)}>
+                <Select value={from} onChange={(e) => setFrom(e.target.value as DemoCurrency)}>
                   {demoCurrencies.map((c) => (
                     <option key={c} value={c}>
                       {t(c)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <button
                 className="swap-button"
@@ -170,13 +185,13 @@ export function MarketData() {
               </button>
               <label>
                 {t(" Nach ")}
-                <select value={to} onChange={(e) => setTo(e.target.value as DemoCurrency)}>
+                <Select value={to} onChange={(e) => setTo(e.target.value as DemoCurrency)}>
                   {demoCurrencies.map((c) => (
                     <option key={c} value={c}>
                       {t(c)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
             <div className="fx-result" aria-live="polite">
@@ -293,7 +308,7 @@ export function MarketData() {
             >
               {t(isLive ? "Verbunden" : liveError ? "Nicht erreichbar" : "Verbinde…")}
             </span>
-            <h3>{t("Frankfurter.app · EZB-Referenzkurse")}</h3>
+            <h3>{t("Frankfurter.dev · EZB-Referenzkurse")}</h3>
             <p>
               {t(
                 " Tagesaktuelle FX-Kurse (EUR/USD, CHF, GBP, PLN) direkt von der Europäischen Zentralbank über einen serverseitigen Adapter. Kein API-Schlüssel erforderlich. ",
@@ -313,7 +328,7 @@ export function MarketData() {
             <h3>{t("EZB · Einlagefazilität")}</h3>
             <p>
               {t(
-                " EZB-Leitzins (Deposit Facility Rate) über die ECB Data Portal API. Wird als Basiszins im DCF-Modell und zur Plausibilisierung genutzt. ",
+                " EZB-Einlagefazilität als Marktindikator. Kein laufzeitgerechter risikofreier DCF-Zins; die Bewertungsannahmen bleiben unabhängig. ",
               )}
             </p>
           </div>

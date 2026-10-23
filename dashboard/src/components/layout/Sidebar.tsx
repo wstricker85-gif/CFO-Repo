@@ -1,6 +1,7 @@
 "use client";
 import { useTranslation } from "@/components/i18n/Language";
 import Link from "next/link";
+import { TourLauncher } from "@/components/shared/DemoGuide";
 import { SwissFlag } from "@/components/shared/SwissFlag";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -97,6 +98,9 @@ export function Sidebar() {
             </div>
           ))}
         </nav>
+        <div className="mobile-tour-launcher">
+          <TourLauncher onLaunch={() => setOpen(false)} />
+        </div>
         <div className="nav-utility">
           <p className="nav-planned-note">{t("Demo-Modus · lokal & transparent")}</p>
         </div>

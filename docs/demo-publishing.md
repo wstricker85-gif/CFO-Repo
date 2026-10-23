@@ -1,139 +1,93 @@
-# Interaktive CFO-Demo für die Website
+# CFO-Demo auf ALL-INKL veröffentlichen
 
-Die echte Datenanbindung ist vorerst geparkt. Diese Variante enthält ausschließlich
-Beispieldaten, lokale Szenariorechner und kurze Kennzahlenerklärungen. Keine Anmeldung,
-keine laufenden KI-Kosten und kein Python-/Node-Server auf dem Webspace erforderlich.
+Ziel: **https://stricker-interim.de/cfo-demo/**. Die bestehende Website bleibt auf
+ALL-INKL; kein Vercel-Konto oder zusätzlicher Node-Hosting-Tarif ist erforderlich.
+Unternehmensdaten und Interpretationen sind fiktiv bzw. regelbasiert, ohne laufende
+KI-Analyse. FX und EZB-Einlagensatz werden separat als öffentliche Marktquellen markiert.
 
-## Vorgesehener Zielpfad
+## Anwendung und Marktadapter
 
-`https://stricker-interim.de/cfo-demo/` — vorbereitet, noch nicht veröffentlicht.
-Die bestehende Website nutzt laut Website-Repo ALL-INKL-Webspace; die Demo ist deshalb
-als statisches Verzeichnis vorbereitet. Die Website-Repo bleibt zunächst unverändert.
+- Next.js erzeugt 15 statische Seiten samt Assets und Navigationsdateien.
+- `dashboard/scripts/build-demo.mjs` baut in einem temporären Projekt ohne die
+  Next.js-API-Routen. Die Arbeitskopie und der lokale Entwicklungsserver werden nicht verändert.
+- Der Builder ergänzt `out/api/market.php`. PHP ruft nur zwei fest definierte
+  öffentliche HTTPS-Quellen ab, prüft die Daten und cached für eine Stunde im
+  temporären Serververzeichnis, außerhalb des öffentlich erreichbaren Webroots.
+- Der Client bekommt beim Build den Pfad `/cfo-demo/api/market.php`. Ein anderer
+  Mount-Pfad wird über `CFO_DEMO_BASE_PATH` sowohl für Assets als auch API berücksichtigt.
+- Der lokale Node-Server nutzt weiterhin `/api/market` mit demselben validierten
+  Antwortformat. Kein manuelles Hin- und Herschieben von Quelldateien erforderlich.
+- Fehlerhafte/fehlende FX-Daten führen zu HTTP 503; die Oberfläche zeigt den
+  fiktiven Ersatz ausdrücklich an. Ein ausgefallener EZB-Abruf lässt FX verfügbar;
+  Zinssatz und Zinsdatum sind dann null. Null Prozent ist ein gültiger EZB-Wert.
 
-## Erzeugen
+Voraussetzungen: PHP ab 7.4, cURL, ausgehende HTTPS-Verbindungen und ein beschreibbares
+PHP-Temp-Verzeichnis. Vertrauliche Daten werden nicht an Marktquellen übermittelt.
+CSV-Dateien werden ausschließlich lokal im Browser ausgewertet.
 
-Im Ordner `dashboard/`:
+## Lokal bauen
 
 ```sh
+cd dashboard
 npm ci
+npm run lint
+npm run typecheck
+npm test
 npm run build:demo
+npm run check:demo
 ```
 
-Die Dateien unter `out/` gehören in das Webspace-Verzeichnis `cfo-demo/`. Nicht den
-übergeordneten Ordner `out` selbst zusätzlich verschachteln. Beispiel:
-
-```text
-Webroot/
-  index.html             bestehende Website
-  cfo-demo/
-    index.html
-    kpi/index.html
-    budget/index.html
-    _next/...
-    ...                  alle übrigen Exportdateien inklusive .txt-Navigationsdaten
-```
-
-Alle Dateien des Exports übernehmen; auch die `.txt`-Dateien sind für die Navigation
-relevant. Keine Next.js-Server-Rewrite-Regeln nötig: Routen besitzen eigene index.html.
-Den Export über HTTPS/HTTP testen, nicht über file:// öffnen.
-
-Bei anderem Zielpfad muss vor dem Upload neu gebaut werden:
+`out/` enthält den vollständigen Web-Inhalt für den Ordner `cfo-demo/`, inklusive
+PHP-Adapter und `.txt`-Navigationsdateien. Nie nur einzelne HTML-Dateien kopieren.
+Ein für `/cfo-demo` gebautes Paket lässt sich nicht durch Umbenennen des Zielordners
+an einen anderen Pfad verschieben; dafür neu bauen:
 
 ```sh
 CFO_DEMO_BASE_PATH=/anderer-pfad npm run build:demo
-CFO_DEMO_BASE_PATH='' npm run build:demo  # eigenständige Domain/Subdomain
+CFO_DEMO_BASE_PATH=/anderer-pfad npm run check:demo
 ```
 
-Ein für `/cfo-demo` erzeugter Build lässt sich nicht durch bloßes Umbenennen des
-Zielordners an eine andere Adresse verschieben; die Asset- und Routerpfade sind eingebaut.
+Der normale Node-Build bleibt separat mit `npm run build` prüfbar. Ein statischer
+Python-/HTTP-Dateiserver kann PHP nicht ausführen und zeigt daher nur den
+gekennzeichneten Markt-Fallback. Für einen vollständigen lokalen Adaptertest:
 
-## Konkrete Website-Verlinkung nach Veröffentlichung
+```sh
+php -l out/api/market.php
+php -S 127.0.0.1:8787 -t out
+# In einem zweiten Terminal:
+node --experimental-strip-types scripts/check-market-http.mjs http://127.0.0.1:8787/api/market.php
+```
 
-Vorgesehener Linktext: **CFO-Dashboard live ausprobieren**.
-Linkziel: `https://stricker-interim.de/cfo-demo/`.
-Sinnvolle Position: im Leistungsbereich bei Unternehmenssteuerung/AI Finance, mit einem
-kurzen Hinweis „Interaktive Demo mit Beispieldaten“. Erst verlinken, wenn die Zieladresse
-funktioniert. Die bestehende Veröffentlichungs-Pipeline muss die Demo-Dateien bei
-späteren Website-Deployments erhalten beziehungsweise selbst mit erzeugen.
+## Bestehender Website-Workflow
 
-## Kennzahlen-Infos
+`../stricker-interim-website/.github/workflows/deploy.yml`:
 
-- Übersicht und KPI-Monitor: Definition, Zielabstand, vorhandener Vormonatsvergleich,
-  Formel und Datenbasis. Fehlende Werte erhalten keine erfundene Bewertung.
-- Fachmodule: Definition und die Werte der aktuellen Ansicht/des aktuellen Szenarios.
-- Maus über Info-Symbol oder Tastaturfokus öffnet den Text; Antippen/Klicken fixiert ihn.
-- Außerhalb tippen, erneute Aktivierung oder Esc schließt den Text.
-- Demotexte sind regelbasiert und bleiben als Beispieldaten kenntlich.
+1. Website und CFO-Repository (`main`) auschecken, Node 24 einrichten.
+2. Lint, Typprüfung, Tests, statischen Build und Prüfung aller Seiten/Assets ausführen.
+3. PHP-Syntax und den echten PHP-Adapter per lokalem HTTP-Aufruf prüfen, einschließlich
+   JSON-Schema und Ablehnung nicht unterstützter POST-Anfragen.
+4. Nur die freigegebenen öffentlichen Website-Dateien, Assets und `cfo-demo/` in
+   `_site/` zusammenstellen. Die vorhandene Kontakt-Konfiguration wird dort erzeugt.
+5. Gemeinsames Paket über die vorhandenen `FTP_*`-Secrets per FTPS übertragen.
+6. Öffentliche Startseite, direkte Board-Unterseite und Markt-JSON nach dem Upload prüfen.
 
-## Vor dem öffentlichen Link noch prüfen
+Dadurch werden Website-Links und Demo gemeinsam gebaut. FTPS ist kein atomarer
+Release-Wechsel: während des Transfers kann es kurzzeitig gemischte Dateistände
+geben. Vorherige erfolgreiche Workflow-Ausführung bzw. Git-Stand dient als Rollback.
 
-Desktop und Mobilgerät, Dark/Light, Hover/Tab/Touch/Esc, Monatswechsel und Szenarien,
-direkte Unterseiten-Aufrufe, CSV/Markdown-Downloads und Druckansicht. Build-, Daten-
-und Assetprüfungen sind durchgeführt; interaktive Browser-QA war ohne verbundenen
-Browser nicht möglich. Live-Upload und Linkänderung sind noch nicht erfolgt.
+Nach Dashboard-Änderungen zuerst `CFO-Repo/main` pushen, dann den Website-Workflow
+unter **Actions → Website bei ALL-INKL veröffentlichen → Run workflow** starten.
+Ein Push auf das Website-`main` startet dieselbe Veröffentlichung automatisch.
+Es werden keine Hosting-Zugangsdaten in dieses öffentliche Repository übernommen.
 
-## Vorbereitetes Paket
+## Website-Einstieg und Sprache
 
-`artifacts/cfo-demo-website.zip` enthält bereits das Verzeichnis `cfo-demo/` mit allen
-Exportdateien. Das Paket ist für `/cfo-demo/` gebaut. Es wurde nicht hochgeladen.
-Der Export hat vierzehn Dashboard-Seiten; alle referenzierten lokalen Assets und Links
-wurden gegen die erzeugten Dateien geprüft.
+Die Website enthält Navigation und eine DE/EN-Vorschaukachel mit schematischen
+SVG-Ansichten der September-Beispieldaten. `?lang=de` bzw. `?lang=en` setzt beim
+Einstieg die Demo-Sprache; anschließende Wechsel werden lokal gespeichert.
+Die Demo besitzt einen Rücklink zur Website und den vollständigen Rundgang.
 
-Prüfstand: 70 Tests, ESLint, TypeScript, Formatprüfung sowie regulärer und statischer
-Build erfolgreich. Die Hosting-Veröffentlichung und Browser-Sichtprüfung stehen aus.
-
-## Sichtbarer Hover-Einstieg
-
-Die Info-Schaltflächen haben einen sichtbaren Kreisrand in Markenfarbe und heben
-sich bei Hover leicht an (bei reduzierter Bewegung ohne Animation). Das Darüberfahren
-über die gesamte Kennzahlenkarte öffnet die Erklärung; ein pixelgenaues Treffen des
-Symbols ist nicht nötig. Tastatur- und Touch-Bedienung bleiben am Info-Button verfügbar.
-
-## Ergänzung: Abschlussdarstellungen
-
-Das aktualisierte Paket enthält vierzehn Dashboard-Seiten, darunter `/guv/`, `/bilanz/`
-und `/cashflow/`. Die Abschlussdaten sind miteinander abgestimmt und werden auch
-in der Übersicht sowie im Board Report verwendet. Das bestehende ZIP wird nach dem
-neuen statischen Build ersetzt. Es wurde weiterhin nichts hochgeladen.
-
-## Rundgang und Ziele
-
-Der optionale Rundgang startet auf der Übersicht und führt über gefilterte überfällige
-Forderungen zum historischen Cashflow. Unter `/annahmen/` sind aktive Ziele und
-Modellgrenzen gebündelt. Zieländerungen im KPI-Monitor gelten während der Sitzung
-auch für Übersicht, Liquiditätsreserve und Bericht; Neuladen setzt sie zurück.
-Hover zeigt die kurze Einordnung, Aktivieren des Info-Symbols zusätzlich Definition,
-Formel und Einschränkungen. Die Kontakt-Schaltfläche verweist auf die Website.
-
-## HGB → IFRS
-
-`/ifrs/` ergänzt die Demo um zwei schaltbare Beispielfälle und automatisch gekoppelte
-latente Steuern. Überleitung, Wasserfall und Export teilen ein Anpassungsjournal.
-Die HGB-Ausgangsdaten bleiben unverändert. Methodik, Bilanzkontrolle, Steuerbasis
-und fachliche Primärquellen stehen direkt im Modul. Keine vollständige Erstanwendung.
-
-## Erweiterter CSV-Test
-
-Der Download und das direkte Beispiel nutzen zwölf fiktive Monate mit optionalen
-Ergebnis-, Plan- und Bilanzangaben. Die lokale Analyse bietet Ertrag, Liquidität,
-Kapitalstruktur, Plan-/Vormonatsvergleiche sowie Verläufe und einen kompletten
-CSV-Export. Der Import bleibt vom übrigen Dashboard getrennt. Formathilfe permanent
-sichtbar und am Eingabepanel ausgerichtet. Neue Validierungs- und Aggregationstests
-prüfen insbesondere fehlende Werte, Stichtagsbezug und sofortige Vormonate.
-
-Aktuelle Darstellung der CSV-Seite: kompakter Dreischritt ganz oben, ein Ablagefeld,
-aufklappbare Formathilfe und wechselbare Auswertungsbereiche. Umfangreiche
-Erklärungen, Diagramme und Quelldaten öffnen erst auf Wunsch. Die Beschreibung
-einer permanent offenen Formathilfe weiter oben ist durch dieses Layout ersetzt.
-
-## Aktueller Rundgang und Exportgrenze
-
-Der Rundgang umfasst alle 14 Stationen in vier Kapiteln, mit besuchten/offenen
-Stationen, Vor/Zurück, Direktsprüngen sowie Beenden/Fortsetzen. Ausprobieren ist
-freiwillig; Marktdaten- und CSV-Quellen sind separat erklärt.
-
-Prüfstand: 78 Tests, ESLint, TypeScript und regulärer Server-Build erfolgreich.
-Alle Highlight-Ziele wurden in den gerenderten Seiten gefunden. Der statische
-Export scheitert weiterhin an der neu hinzugefügten `/api/market`-Route. Das
-vorhandene Website-ZIP wurde deshalb nicht ersetzt und enthält noch den alten
-Rundgang. Keine Veröffentlichung erfolgt. Browser-Bedienprüfung steht aus.
+Interaktive mobile Bedienwege wurden vom Nutzer anhand der Handyansicht bestätigt;
+Screenshots des Board Reports wurden geprüft. Ein vollständiger automatisierter
+Browser-/Gerätetest ist ohne Browser-Verbindung weiterhin offen. HTTP-, Asset- und
+Finanztests sind getrennt davon dokumentiert und ersetzen keine visuelle Prüfung.

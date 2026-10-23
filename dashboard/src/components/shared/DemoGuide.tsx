@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useDemo } from "./DemoProvider";
 import { tourChapters, tourSteps, tourIndex, tourProgress, normalizeTourPath } from "@/lib/tour";
 
-export function TourLauncher() {
+export function TourLauncher({ onLaunch }: { onLaunch?: () => void } = {}) {
   const { t } = useTranslation();
 
   const { tour, dispatchTour } = useDemo();
@@ -14,7 +14,10 @@ export function TourLauncher() {
     return (
       <button
         className="tour-launcher"
-        onClick={() => dispatchTour({ type: "stop" })}
+        onClick={() => {
+          dispatchTour({ type: "stop" });
+          onLaunch?.();
+        }}
         aria-label={t("Rundgang beenden")}
       >
         {t(" Rundgang × ")}
@@ -25,7 +28,10 @@ export function TourLauncher() {
     <Link
       className="tour-launcher"
       href={resume ? tour.lastPath! : "/"}
-      onClick={() => dispatchTour(resume ? { type: "resume" } : { type: "start", path: "/" })}
+      onClick={() => {
+        dispatchTour(resume ? { type: "resume" } : { type: "start", path: "/" });
+        onLaunch?.();
+      }}
     >
       {t(resume ? "Fortsetzen ↗" : "Rundgang ↗")}
     </Link>

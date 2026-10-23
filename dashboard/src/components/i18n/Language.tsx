@@ -62,6 +62,11 @@ export function LanguageDocument() {
   const { language } = useTranslation();
   const path = usePathname().replace(/\/$/, "") || "/";
   useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    if (requested === "de" || requested === "en") {
+      setLanguage(requested);
+      return;
+    }
     try {
       const saved = localStorage.getItem("cfo-language");
       if (saved === "en" || saved === "de") setLanguage(saved);

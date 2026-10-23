@@ -9,6 +9,7 @@ if (basePath && !/^\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*$/.test(basePath)) {
 }
 
 const nextConfig: NextConfig = {
+  env: { NEXT_PUBLIC_MARKET_PATH: staticDemo ? `${basePath}/api/market.php` : "/api/market" },
   cacheComponents: !staticDemo,
   partialPrefetching: !staticDemo,
   ...(staticDemo ? { output: "export", trailingSlash: true, basePath } : {}),

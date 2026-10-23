@@ -12,7 +12,8 @@
     "build:turbo": "next build",
     "format": "prettier --write src tests *.mjs *.ts *.json",
     "format:check": "prettier --check src tests *.mjs *.ts *.json",
-    "build:demo": "CFO_STATIC_EXPORT=1 next build --webpack"
+    "build:demo": "node scripts/build-demo.mjs",
+    "check:demo": "node scripts/check-demo.mjs"
   },
   "dependencies": {
     "next": "16.4.2",
