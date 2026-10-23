@@ -1,6 +1,6 @@
 # CFO-Demo auf ALL-INKL veröffentlichen
 
-Ziel: **https://stricker-interim.de/cfo-demo/**. Die bestehende Website bleibt auf
+Veröffentlicht am **23.10.2026**: **https://stricker-interim.de/cfo-demo/**. Die bestehende Website bleibt auf
 ALL-INKL; kein Vercel-Konto oder zusätzlicher Node-Hosting-Tarif ist erforderlich.
 Unternehmensdaten und Interpretationen sind fiktiv bzw. regelbasiert, ohne laufende
 KI-Analyse. FX und EZB-Einlagensatz werden separat als öffentliche Marktquellen markiert.
@@ -91,3 +91,13 @@ Interaktive mobile Bedienwege wurden vom Nutzer anhand der Handyansicht bestäti
 Screenshots des Board Reports wurden geprüft. Ein vollständiger automatisierter
 Browser-/Gerätetest ist ohne Browser-Verbindung weiterhin offen. HTTP-, Asset- und
 Finanztests sind getrennt davon dokumentiert und ersetzen keine visuelle Prüfung.
+
+## Bestätigter Veröffentlichungsstand vom 23.10.2026
+
+Der Website-Workflow [39966243110](https://github.com/wstricker85-gif/stricker-interim-website/actions/runs/39966243110)
+war erfolgreich (Website `333d9a0`, Dashboard `8ff8a5f`). 92 Tests, Lint, Typprüfung,
+statischer Build, lokale PHP-HTTP-Prüfung und die abschließende öffentliche Prüfung
+bestanden. Alle 15 Seiten, ein Navigations-Textpayload, ein JavaScript-Chunk und
+das Vorschaubild antworteten über HTTPS mit HTTP 200. Das öffentlich abgerufene
+Markt-JSON erfüllte den Vertrag; FX und EZB hatten beim Abruf den Stand 23.10.2026.
+Dies belegt Erreichbarkeit und Datenformat, keinen vollständigen Browser-Gerätetest.
