@@ -1,58 +1,79 @@
-// KpiCard — displays a single financial metric with RAG status and trend delta.
-// Status controls the left border color (good=green, watch=amber, warning=red, critical=red).
+"use client";
+import { useTranslation } from "@/components/i18n/Language";
+import Link from "next/link";
+import type { MetricInsight } from "@/lib/insights";
+import { MetricInfo } from "./MetricInfo";
+import type { Metric } from "@/lib/contracts";
+import {
+  assessmentLabels,
+  formatCompactCurrency,
+  formatDelta,
+  formatValue,
+  statusLabels,
+} from "@/lib/format";
 
-type Status = "good" | "watch" | "warning" | "critical" | "neutral";
+export function KpiCard({
+  metric,
+  index,
+  insight,
+}: {
+  metric: Metric;
+  index: number;
+  insight?: MetricInsight;
+}) {
+  const { t } = useTranslation();
 
-type KpiCardProps = {
-  label: string;       // e.g. "EBITDA Margin"
-  value: string;       // e.g. "14.3%" — already formatted, never raw numbers
-  delta?: string;      // e.g. "+2.1% vs. Vormonat" — optional
-  status?: Status;     // controls border color — defaults to neutral
-  hint?: string;       // optional second line of context below delta
-};
-
-const borderColor: Record<Status, string> = {
-  good:     "border-l-good",
-  watch:    "border-l-watch",
-  warning:  "border-l-warning",
-  critical: "border-l-warning",
-  neutral:  "border-l-line",
-};
-
-const deltaColor: Record<Status, string> = {
-  good:     "text-good",
-  watch:    "text-watch",
-  warning:  "text-warning",
-  critical: "text-warning",
-  neutral:  "text-muted",
-};
-
-export function KpiCard({ label, value, delta, status = "neutral", hint }: KpiCardProps) {
+  const comparison = metric.comparison;
   return (
-    <div className={`bg-panel border border-line border-l-4 ${borderColor[status]} p-card flex flex-col gap-3`}>
-
-      {/* Label row */}
-      <span className="label">{label}</span>
-
-      {/* Value — large, tabular so digits align across cards */}
-      <span className="tabular font-sans text-2xl font-medium text-ink leading-none">
-        {value}
-      </span>
-
-      {/* Delta + hint — only rendered if provided */}
-      {(delta || hint) && (
-        <div className="flex flex-col gap-0.5">
-          {delta && (
-            <span className={`font-mono text-xs ${deltaColor[status]}`}>
-              {delta}
+    <article
+      data-metric-hover={insight ? "" : undefined}
+      className="kpi-card"
+      aria-labelledby={`kpi-${metric.id}`}
+    >
+      <div className="kpi-top">
+        <span className="label" id={`kpi-${metric.id}`}>
+          {t(metric.label)}
+        </span>
+        <span className="kpi-meta">
+          {insight && <MetricInfo insight={insight} />}
+          <span className="kpi-index">0{index + 1}</span>
+        </span>
+      </div>
+      <div className="kpi-value tabular">
+        {t(
+          metric.unit === "currency" && metric.value !== null
+            ? formatCompactCurrency(metric.value)
+            : formatValue(metric.value, metric.unit),
+        )}
+      </div>
+      <div className="kpi-comparison" data-assessment={comparison?.assessment ?? "unknown"}>
+        {comparison ? (
+          <>
+            <span aria-hidden="true">
+              {t(comparison.direction === "up" ? "↗" : comparison.direction === "down" ? "↘" : "→")}
             </span>
-          )}
-          {hint && (
-            <span className="font-mono text-xs text-muted">{hint}</span>
-          )}
-        </div>
+            {t(" ")}
+            {t(formatDelta(comparison.value, comparison.unit))}
+            {t(" ")}
+            <span className="sr-only">{t(assessmentLabels[comparison.assessment])}, </span>
+            <span className="comparison-label">{t(comparison.label)}</span>
+          </>
+        ) : (
+          "Kein Vergleich verfügbar"
+        )}
+      </div>
+      <div className="kpi-bottom">
+        <span className="status" data-status={metric.status}>
+          <span className="status-dot" />
+          {t(statusLabels[metric.status])}
+        </span>
+        <span className="kpi-target">{t(metric.target ?? metric.unavailable_reason)}</span>
+      </div>
+      {metric.id === "dso" && (
+        <Link className="kpi-detail-link" href="/working-capital#ueberfaellig">
+          {t(" Überfällige Forderungen prüfen ↗ ")}
+        </Link>
       )}
-
-    </div>
+    </article>
   );
 }

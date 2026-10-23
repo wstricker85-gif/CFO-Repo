@@ -1,52 +1,39 @@
+import { LanguageDocument, SkipLink } from "@/components/i18n/Language";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { TourLayout, ContactCta } from "@/components/shared/DemoGuide";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { DemoProvider } from "@/components/shared/DemoProvider";
+import { demoSnapshots, revenueHistory } from "@/lib/demo-data";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "CFO Dashboard",
-  description: "AI-powered financial analysis for CFOs",
+  title: "CFO Dashboard · Stricker Interim",
+  description: "Unternehmenssteuerung, Performance und Liquidität – interaktive Dashboard-Demo.",
 };
-
-// Runs before React hydrates — prevents white flash when user has saved a theme.
-// Reads localStorage, falls back to system preference, falls back to dark.
-const themeScript = `
-  (function() {
-    try {
-      var stored = localStorage.getItem('theme');
-      var preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', stored || preferred);
-    } catch(e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  })();
-`;
+const themeScript = `(function(){try{var t=localStorage.getItem('theme');var p=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.dataset.theme=(t==='light'||t==='dark')?t:p}catch(e){document.documentElement.dataset.theme='dark'}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" data-theme="dark" className={`${inter.variable} h-full antialiased`}>
+    <html lang="de" data-theme="dark" suppressHydrationWarning>
       <head>
-        {/* dangerouslySetInnerHTML is safe here — no user input, static string */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full bg-bg text-ink flex flex-col">
-
-        <Header />
-
-        <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
-
+      <body>
+        <LanguageDocument />
+        <SkipLink />
+        <DemoProvider snapshots={demoSnapshots} history={revenueHistory}>
+          <Header />
+          <div className="app-shell">
+            <Sidebar />
+            <main id="main-content" className="main-content">
+              <TourLayout>
+                {children}
+                <ContactCta />
+              </TourLayout>
+            </main>
+          </div>
+        </DemoProvider>
       </body>
     </html>
   );

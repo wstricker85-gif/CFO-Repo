@@ -1,43 +1,38 @@
+"use client";
+import { LanguageToggle, useTranslation } from "@/components/i18n/Language";
+import Link from "next/link";
+import { TourLauncher } from "@/components/shared/DemoGuide";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
-  return (
-    <header
-      className="sticky top-0 z-50 flex items-center justify-between px-card border-b border-line"
-      style={{
-        minHeight: "70px",
-        backgroundColor: "var(--mast)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-      }}
-    >
-      {/* Left: brand mark + app name */}
-      <div className="flex items-center gap-3">
-        <BrandMark />
-        <div className="flex flex-col">
-          <span className="font-serif text-ink text-base leading-tight">CFO Dashboard</span>
-          <span className="flex items-center gap-1" style={{ fontSize: "9px", fontFamily: "var(--font-mono)", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)" }}>
-            🇨🇭 Powered by Swissi AI
-          </span>
-        </div>
-      </div>
+  const { t } = useTranslation();
 
-      {/* Right: theme toggle */}
-      <div className="flex items-center gap-3">
-        <span className="label">Beta</span>
+  return (
+    <header className="mast">
+      <Link href="/" className="brand" aria-label={t("Stricker Interim – Dashboard-Übersicht")}>
+        <span className="brand-mark" aria-hidden="true">
+          {t(" W ")}
+        </span>
+        <span>
+          {t(" STRICKER ")}
+          <span className="brand-muted">{t("INTERIM")}</span>
+        </span>
+      </Link>
+      <div className="mast-divider" aria-hidden="true" />
+      <span className="mast-product">{t("CFO Dashboard")}</span>
+      <div className="mast-right">
+        <TourLauncher />
+        <a className="website-backlink" href="https://stricker-interim.de/">
+          {t(" Zur Website ")}
+          <span aria-hidden="true">↗</span>
+        </a>
+        <span className="demo-badge">{t("Demo")}</span>
+        <LanguageToggle />
         <ThemeToggle />
+        <span className="avatar" aria-label={t("Demo-Arbeitsbereich")}>
+          {t(" WS ")}
+        </span>
       </div>
     </header>
-  );
-}
-
-function BrandMark() {
-  return (
-    <div
-      className="flex items-center justify-center bg-accent text-white font-serif font-bold"
-      style={{ width: 29, height: 29, fontSize: 17 }}
-    >
-      W
-    </div>
   );
 }

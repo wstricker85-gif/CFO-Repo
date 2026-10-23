@@ -13,3 +13,6 @@ data/market-cache/
 
 # OS
 .DS_Store
+
+# Generated static demo packages
+artifacts/
