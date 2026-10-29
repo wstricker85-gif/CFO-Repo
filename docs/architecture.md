@@ -408,7 +408,7 @@ the website's language into the app without sending source financial data.
 
 Website demo links carry the currently displayed `theme=light|dark` alongside
 `lang`. The dashboard applies a valid theme before rendering, persists it under
-the shared `theme` key when storage is available, and removes the consumed theme
-parameter without changing other query parameters or the hash. This prevents an
+the shared `theme` key when storage is available, and reapplies it after React hydration. Only then is the consumed theme
+parameter removed without changing other query parameters or the hash. This prevents an
 old entry URL from overriding later manual theme changes on reload. Without a
 valid parameter, the saved preference and then the system preference apply.

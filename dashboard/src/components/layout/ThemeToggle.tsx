@@ -1,7 +1,30 @@
 "use client";
+import { useEffect } from "react";
 import { useTranslation } from "@/components/i18n/Language";
 export function ThemeToggle() {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("theme");
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem("theme");
+    } catch {}
+    const theme = requested === "light" || requested === "dark"
+      ? requested
+      : saved === "light" || saved === "dark"
+        ? saved
+        : window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    if (requested === "light" || requested === "dark") {
+      try {
+        localStorage.setItem("theme", theme);
+      } catch {}
+      const url = new URL(window.location.href);
+      url.searchParams.delete("theme");
+      window.history.replaceState(window.history.state, "", url.href);
+    }
+  }, []);
 
   function toggle() {
     const root = document.documentElement;
