@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "CFO Dashboard · Stricker Interim",
   description: "Unternehmenssteuerung, Performance und Liquidität – interaktive Dashboard-Demo.",
 };
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');var p=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.dataset.theme=(t==='light'||t==='dark')?t:p}catch(e){document.documentElement.dataset.theme='dark'}})();`;
+const themeScript = `(function(){var q=new URLSearchParams(location.search).get('theme');var t;try{t=localStorage.getItem('theme')}catch(e){}var v=(q==='light'||q==='dark')?q:(t==='light'||t==='dark')?t:matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.dataset.theme=v;if(q==='light'||q==='dark'){try{localStorage.setItem('theme',v)}catch(e){}try{var u=new URL(location.href);u.searchParams.delete('theme');history.replaceState(history.state,'',u.href)}catch(e){}}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
