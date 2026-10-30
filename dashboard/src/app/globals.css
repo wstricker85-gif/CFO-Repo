@@ -5739,3 +5739,73 @@ input[type="range"] {
     display: none;
   }
 }
+
+/* Shared website scroll progress and back-to-top control. */
+.scroll-top {
+  --progress: 0deg;
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 30;
+  width: 58px;
+  height: 58px;
+  padding: 3px;
+  border: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--progress), var(--line) 0);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition:
+    opacity 0.25s,
+    visibility 0.25s,
+    transform 0.25s;
+}
+.scroll-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.scroll-top-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--ink);
+  border: 2px solid var(--bg);
+}
+.scroll-top svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.scroll-top:hover .scroll-top-inner {
+  background: var(--ink);
+  color: var(--bg);
+}
+@media (max-width: 620px) {
+  .scroll-top {
+    right: 16px;
+    bottom: 16px;
+    width: 52px;
+    height: 52px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top {
+    transition: none;
+  }
+}
+@media print {
+  .scroll-top {
+    display: none;
+  }
+}

@@ -1,5 +1,6 @@
 /** Fixed English presentation copy; no external translation service. */
 export const english: Record<string, string> = {
+  "Zurück nach oben": "Back to top",
   "In Kooperation mit Swissi AI": "In cooperation with Swissi AI",
   "Über die Navigation gelangst du zu den verfügbaren Dashboard-Modulen.":
     "Use the navigation to open the available dashboard modules.",

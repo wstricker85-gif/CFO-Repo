@@ -28,6 +28,10 @@ storage of financial data. Theme preference is the only persistent browser setti
 Module-local drafts (report notes, custom thresholds/scenarios) are not persisted;
 export before navigating away if they should be retained.
 
+The shared layout includes the website-style back-to-top arrow with a scroll-progress
+ring, responsive sizing, DE/EN labels and reduced-motion support. It updates after
+route and content-size changes and is hidden in printed reports.
+
 ## Code responsibilities
 
 - `components/shared/DemoProvider.tsx`: period state shared across routes through root layout.

@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DemoProvider } from "@/components/shared/DemoProvider";
 import { demoSnapshots, revenueHistory } from "@/lib/demo-data";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </TourLayout>
             </main>
           </div>
+          <ScrollToTop />
         </DemoProvider>
       </body>
     </html>
